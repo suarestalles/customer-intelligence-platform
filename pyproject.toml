@@ -1,20 +1,59 @@
 [project]
 name = "customer-intelligence-platform"
 version = "0.1.0"
-description = "Add your description here"
+description = "End-to-end Customer Intelligence Platform using FastAPI, DuckDB and Machine Learning."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
+
 dependencies = [
     "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.1",
     "pydantic-settings>=2.14.2",
-    "uvicorn>=0.52.1",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=2.3.0",
-    "pre-commit>=4.6.1",
-    "pytest>=9.1.1",
-    "pytest-cov>=7.1.0",
-    "ruff>=0.16.1",
+    "mypy>=1.18.2",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "httpx>=0.28.1",
+    "ruff>=0.12.8",
+]
+
+##################################
+# Ruff
+##################################
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+##################################
+# MyPy
+##################################
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+##################################
+# Pytest
+##################################
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests"
 ]
