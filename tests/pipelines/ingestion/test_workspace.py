@@ -1,4 +1,4 @@
-from pipelines.injestion.workspace import DatasetWorkspace
+from pipelines.ingestion.workspace import DatasetWorkspace
 
 
 def test_workspace_creates_directories(tmp_path):

@@ -1,5 +1,5 @@
-from pipelines.injestion.downloader import DatasetDownloader
-from pipelines.injestion.manager import DatasetManager
+from pipelines.ingestion.downloader import DatasetDownloader
+from pipelines.ingestion.manager import DatasetManager
 
 
 def main() -> None:

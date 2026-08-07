@@ -6,15 +6,14 @@ from typing import Literal
 class DatasetFile:
     name: str
     url: str
+    description: str
+    size_bytes: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class Dataset:
     name: str
     description: str
-    url: str
-    filename: str
-    expected_files: tuple[DatasetFile, ...]
-    compressed: bool = True
+    files: tuple[DatasetFile, ...]
     checksum: str | None = None
-    format: Literal["zip", "csv", "parquet"] = "zip"
+    format: Literal["csv", "parquet"] = "csv"

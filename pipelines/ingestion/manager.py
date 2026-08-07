@@ -1,7 +1,7 @@
-from pipelines.injestion.exceptions import DatasetNotFoundError
-from pipelines.injestion.models import Dataset
-from pipelines.injestion.registry import DATASETS
-from pipelines.injestion.workspace import DatasetWorkspace
+from pipelines.ingestion.exceptions import DatasetNotFoundError
+from pipelines.ingestion.models import Dataset
+from pipelines.ingestion.registry import DATASETS
+from pipelines.ingestion.workspace import DatasetWorkspace
 
 
 class DatasetManager:
