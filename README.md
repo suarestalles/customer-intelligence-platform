@@ -6,38 +6,59 @@ An end-to-end Customer Intelligence Platform built with **Python**, **FastAPI**,
 
 ---
 
-## 📖 Overview
+# 📖 Overview
 
-The goal of this project is to simulate a real-world analytics platform used by an e-commerce company.
+The goal of this project is to simulate a real-world customer analytics platform used by an e-commerce company.
 
-The platform will cover the complete data lifecycle:
+The platform is being developed to cover the complete data lifecycle:
 
 * Data ingestion
 * Data validation
 * Data transformation
 * Analytical Data Warehouse
-* Machine Learning
+* Machine Learning pipelines
 * REST API
 * Interactive Dashboard
 
-The project is being developed incrementally, following software engineering best practices such as testing, containerization, type checking, linting and documentation.
+The project combines **Software Engineering**, **Data Engineering**, and **Data Science** practices, following modern development standards such as:
+
+* Automated testing
+* Containerization
+* Type checking
+* Code formatting and linting
+* Reproducible data pipelines
+* Documentation
 
 ---
 
-# 🏗️ Current Architecture
+# 🏗️ Architecture
+
+Current architecture:
 
 ```text
-                        FastAPI
-                           │
-                           ▼
-                    Health Endpoint
-                           │
-                           ▼
-                 Configuration Layer
-                           │
-                           ▼
-                 Logging & Lifespan
+                         Public Dataset
+                              │
+                              ▼
+                    Dataset Ingestion Pipeline
+                              │
+                              ▼
+                         Raw Data Layer
+                              │
+                              ▼
+                    Analytical Data Warehouse
+                         (DuckDB)
+                              │
+                              ▼
+                     Data Transformations
+                              │
+                              ▼
+                           FastAPI
+                              │
+                              ▼
+                         Dashboard Layer
 ```
+
+The architecture is being developed incrementally, starting from the foundation layer and evolving toward a complete analytics platform.
 
 ---
 
@@ -49,6 +70,19 @@ The project is being developed incrementally, following software engineering bes
 * FastAPI
 * Uvicorn
 * Pydantic Settings
+
+## Data Engineering
+
+* DuckDB
+* Polars
+* HTTPX
+
+## Machine Learning (Planned)
+
+* Scikit-learn
+* Feature Engineering pipelines
+* Customer segmentation models
+* Predictive analytics
 
 ## Development
 
@@ -83,10 +117,24 @@ customer-intelligence-platform/
 │   ├── services/
 │   └── main.py
 │
+├── pipelines/
+│   │
+│   ├── ingestion/
+│   │   ├── models.py
+│   │   ├── registry.py
+│   │   ├── sources.py
+│   │   ├── downloader.py
+│   │   └── workspace.py
+│   │
+│   └── warehouse/
+│
 ├── data/
-├── docker/
-├── docs/
+│   └── external/
+│       └── olist/
+│           └── raw/
+│
 ├── scripts/
+│
 ├── tests/
 │
 ├── docker-compose.yml
@@ -134,7 +182,59 @@ The application will be available at:
 
 ---
 
-## Running with Docker
+# 📥 Dataset Ingestion
+
+The project currently includes an ingestion pipeline responsible for downloading and organizing external datasets.
+
+Implemented features:
+
+* Dataset metadata modeling
+* Dataset registry
+* Dataset workspace management
+* Automated file download
+* Idempotent downloads
+* Raw data organization
+
+Current dataset:
+
+**Brazilian E-Commerce Public Dataset by Olist**
+
+The dataset contains information about:
+
+* Customers
+* Orders
+* Products
+* Sellers
+* Payments
+* Reviews
+* Geolocation
+
+Download dataset:
+
+```bash
+uv run python scripts/download_dataset.py
+```
+
+The raw files are stored at:
+
+```text
+data/
+
+└── external/
+
+    └── olist/
+
+        └── raw/
+
+            ├── olist_customers_dataset.csv
+            ├── olist_orders_dataset.csv
+            ├── olist_products_dataset.csv
+            └── ...
+```
+
+---
+
+# 🐳 Running with Docker
 
 Build the image:
 
@@ -205,7 +305,7 @@ LOG_LEVEL=INFO
 
 # 🛣️ Roadmap
 
-## Phase 1 — Foundation
+## Phase 1 — Foundation ✅
 
 * [x] Project initialization with uv
 * [x] FastAPI application
@@ -218,25 +318,36 @@ LOG_LEVEL=INFO
 * [x] Ruff configuration
 * [x] MyPy configuration
 * [x] Pytest configuration
+* [x] Pre-commit integration
 
 ---
 
-## Phase 2 — Data Engineering
+## Phase 2 — Data Engineering 🚧
 
-* [ ] Dataset ingestion
-* [ ] Data validation
+* [x] Dataset ingestion pipeline
+* [x] Dataset metadata models
+* [x] Dataset registry
+* [x] Raw data organization
+* [x] Automated dataset download
+
+Upcoming:
+
 * [ ] DuckDB integration
-* [ ] Data Warehouse
+* [ ] Raw data loading
+* [ ] Data Warehouse modeling
+* [ ] Data validation
 * [ ] ETL pipeline
 
 ---
 
 ## Phase 3 — Analytics
 
-* [ ] KPI API
+* [ ] Analytical data models
+* [ ] KPI generation
 * [ ] Customer metrics
 * [ ] Sales metrics
 * [ ] Product metrics
+* [ ] Analytics API endpoints
 
 ---
 
@@ -246,6 +357,7 @@ LOG_LEVEL=INFO
 * [ ] Customer segmentation
 * [ ] Churn prediction
 * [ ] Recommendation models
+* [ ] Model evaluation pipeline
 
 ---
 
@@ -254,6 +366,20 @@ LOG_LEVEL=INFO
 * [ ] Interactive dashboard
 * [ ] KPI visualization
 * [ ] Customer analytics
+* [ ] Business intelligence views
+
+---
+
+# 🔮 Future Improvements
+
+Possible future extensions:
+
+* Data orchestration with Airflow or Dagster
+* CI/CD pipelines
+* Cloud deployment
+* Data quality monitoring
+* Model tracking and experiment management
+* Real-time data ingestion
 
 ---
 
