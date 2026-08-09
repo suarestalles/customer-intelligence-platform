@@ -16,7 +16,9 @@ OLIST = Dataset(
     description="Brazilian E-Commerce Public Dataset",
     files=(
         DatasetFile(
-            name="olist_customer_dataset.csv", description="Customer information", url=CUSTOMERS_URL
+            name="olist_customers_dataset.csv",
+            description="Customer information",
+            url=CUSTOMERS_URL,
         ),
         DatasetFile(
             name="olist_orders_dataset.csv",

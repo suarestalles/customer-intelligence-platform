@@ -219,3 +219,7 @@ __marimo__/
 
 # CSV Files
 *.csv
+
+# Warehouse Database Files
+data/warehouse/
+data/external/

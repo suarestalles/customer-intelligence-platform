@@ -23,7 +23,7 @@ class DatasetDownloader:
         for file in dataset.files:
             if not file.url.startswith(("http://", "https://")):
                 raise DatasetDownloadError(f"Invalid URL for file: {file.name}")
-            destination = workspace.root / file.name
+            destination = workspace.root / "raw" / file.name
 
             logger.info(f"-----[{step}/9]Downloading {dataset.name}")
             self._download_file(file.url, destination, overwrite)

@@ -1,6 +1,6 @@
 # Customer Intelligence Platform
 
-An end-to-end Customer Intelligence Platform built with **Python**, **FastAPI**, **DuckDB**, and **Machine Learning**, following modern Data Engineering and MLOps best practices.
+An end-to-end Customer Intelligence Platform built with **Python**, **FastAPI**, **DuckDB**, and **Data Analytics**, following modern Software Engineering and Data Engineering practices.
 
 > **Status:** 🚧 In Development
 
@@ -10,30 +10,34 @@ An end-to-end Customer Intelligence Platform built with **Python**, **FastAPI**,
 
 The goal of this project is to simulate a real-world customer analytics platform used by an e-commerce company.
 
-The platform is being developed to cover the complete data lifecycle:
+The platform is being developed incrementally to cover the complete data lifecycle:
 
 * Data ingestion
-* Data validation
+* Raw data organization
+* Data warehousing
 * Data transformation
-* Analytical Data Warehouse
-* Machine Learning pipelines
+* Customer analytics
+* Customer segmentation
 * REST API
+* Machine Learning
 * Interactive Dashboard
 
-The project combines **Software Engineering**, **Data Engineering**, and **Data Science** practices, following modern development standards such as:
+The project combines **Software Engineering**, **Data Engineering**, and **Data Analytics** practices, following modern development standards such as:
 
 * Automated testing
 * Containerization
 * Type checking
 * Code formatting and linting
+* Pre-commit hooks
 * Reproducible data pipelines
+* Layered architecture
 * Documentation
 
 ---
 
 # 🏗️ Architecture
 
-Current architecture:
+The current data architecture is:
 
 ```text
                          Public Dataset
@@ -45,20 +49,24 @@ Current architecture:
                          Raw Data Layer
                               │
                               ▼
-                    Analytical Data Warehouse
-                         (DuckDB)
+                            DuckDB
+                              │
+                ┌─────────────┴─────────────┐
+                ▼                           ▼
+         order_metrics              customer_metrics
+                │                           │
+                └─────────────┬─────────────┘
+                              ▼
+                       customer_rfm
                               │
                               ▼
-                     Data Transformations
+                         Analytics API
                               │
                               ▼
-                           FastAPI
-                              │
-                              ▼
-                         Dashboard Layer
+                          Dashboard
 ```
 
-The architecture is being developed incrementally, starting from the foundation layer and evolving toward a complete analytics platform.
+The project is being developed incrementally, starting from the software foundation and evolving toward a complete customer analytics platform.
 
 ---
 
@@ -76,13 +84,22 @@ The architecture is being developed incrementally, starting from the foundation 
 * DuckDB
 * Polars
 * HTTPX
+* SQL
 
-## Machine Learning (Planned)
+## Analytics
+
+* Customer metrics
+* Order metrics
+* RFM analysis
+* Customer segmentation
+
+## Machine Learning — Planned
 
 * Scikit-learn
 * Feature Engineering pipelines
-* Customer segmentation models
 * Predictive analytics
+* Churn prediction
+* Recommendation models
 
 ## Development
 
@@ -126,16 +143,31 @@ customer-intelligence-platform/
 │   │   ├── downloader.py
 │   │   └── workspace.py
 │   │
+│   ├── analytics/
+│   │   ├── order_metrics.py
+│   │   ├── customer_metrics.py
+│   │   └── customer_rfm.py
+│   │
 │   └── warehouse/
+│       └── database.py
 │
 ├── data/
-│   └── external/
-│       └── olist/
-│           └── raw/
+│   ├── external/
+│   │   └── olist/
+│   │       └── raw/
+│   │
+│   └── warehouse/
+│       └── customer_intelligence.duckdb
 │
 ├── scripts/
+│   ├── download_dataset.py
+│   ├── check_database.py
+│   └── build_analytics.py
 │
 ├── tests/
+│   ├── analytics/
+│   ├── ingestion/
+│   └── warehouse/
 │
 ├── docker-compose.yml
 ├── pyproject.toml
@@ -158,6 +190,8 @@ cd customer-intelligence-platform
 ---
 
 ## Install dependencies
+
+The project uses **uv** for Python version and dependency management.
 
 ```bash
 uv sync
@@ -184,7 +218,7 @@ The application will be available at:
 
 # 📥 Dataset Ingestion
 
-The project currently includes an ingestion pipeline responsible for downloading and organizing external datasets.
+The project includes an ingestion pipeline responsible for downloading and organizing external datasets.
 
 Implemented features:
 
@@ -194,6 +228,7 @@ Implemented features:
 * Automated file download
 * Idempotent downloads
 * Raw data organization
+* Dataset source abstraction
 
 Current dataset:
 
@@ -209,7 +244,7 @@ The dataset contains information about:
 * Reviews
 * Geolocation
 
-Download dataset:
+Download the dataset:
 
 ```bash
 uv run python scripts/download_dataset.py
@@ -219,18 +254,215 @@ The raw files are stored at:
 
 ```text
 data/
-
 └── external/
-
     └── olist/
-
         └── raw/
-
             ├── olist_customers_dataset.csv
             ├── olist_orders_dataset.csv
             ├── olist_products_dataset.csv
             └── ...
 ```
+
+The ingestion process is designed to be **idempotent**. Existing files are not downloaded again unless explicitly requested.
+
+---
+
+# 🗄️ Data Warehouse
+
+The project uses **DuckDB** as the analytical database.
+
+The database is stored locally at:
+
+```text
+data/warehouse/customer_intelligence.duckdb
+```
+
+The current warehouse is organized into logical layers.
+
+## Raw Layer
+
+The `raw` schema contains data loaded from the original CSV files.
+
+Examples:
+
+```text
+raw.customers
+raw.orders
+raw.order_items
+raw.order_payments
+```
+
+The Raw Layer preserves the original dataset structure and acts as the foundation for analytical transformations.
+
+---
+
+# 📊 Analytics Layer
+
+The `analytics` schema contains transformed and business-oriented datasets.
+
+Current models:
+
+```text
+analytics.order_metrics
+analytics.customer_metrics
+analytics.customer_rfm
+```
+
+## Order Metrics
+
+`analytics.order_metrics` provides an order-level analytical model.
+
+The model consolidates information from:
+
+```text
+raw.orders
+raw.order_items
+raw.order_payments
+```
+
+while avoiding duplication caused by one-to-many relationships.
+
+Current metrics include:
+
+* Total items
+* Product value
+* Freight value
+* Payment value
+* Order status
+* Order timestamps
+
+A key data-quality rule is that each `order_id` must appear exactly once.
+
+---
+
+## Customer Metrics
+
+`analytics.customer_metrics` aggregates order-level information by customer.
+
+Current metrics include:
+
+* Total orders
+* Total items
+* Total spent
+* Average order value
+* First order date
+* Last order date
+* Customer lifetime days
+
+---
+
+## RFM Analysis
+
+The project currently implements **RFM analysis** for customer segmentation.
+
+RFM represents:
+
+* **Recency** — how recently the customer purchased
+* **Frequency** — how frequently the customer purchases
+* **Monetary** — how much the customer spends
+
+The resulting model:
+
+```text
+analytics.customer_rfm
+```
+
+contains:
+
+* Recency
+* Frequency
+* Monetary
+* Recency score
+* Frequency score
+* Monetary score
+* RFM score
+* Customer segment
+
+Current customer segments include:
+
+```text
+Champions
+Loyal Customers
+Potential Loyalists
+At Risk
+Lost
+```
+
+These segments will later be used by the API and dashboard layers.
+
+---
+
+# 🧪 Data Quality & Testing
+
+The project uses **Pytest** to validate the ingestion, warehouse, and analytical layers.
+
+Current tests cover:
+
+* Dataset models
+* Dataset ingestion
+* File downloading
+* DuckDB database operations
+* Order-level transformations
+* Customer-level transformations
+* RFM calculations
+* Data duplication prevention
+* Analytical model integrity
+
+Run the complete test suite:
+
+```bash
+uv run pytest
+```
+
+---
+
+# 🎨 Formatting
+
+The project uses **Ruff** for code formatting.
+
+```bash
+uv run ruff format .
+```
+
+---
+
+# 🔎 Lint
+
+Run:
+
+```bash
+uv run ruff check .
+```
+
+---
+
+# ✅ Type Checking
+
+Run:
+
+```bash
+uv run mypy app
+```
+
+---
+
+# 🪝 Pre-commit
+
+The project uses **pre-commit** to automatically validate the code before commits.
+
+Configured checks include:
+
+* Ruff linting
+* Ruff formatting
+* Code quality checks
+
+Run all hooks manually:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+This helps prevent improperly formatted or invalid code from being committed to the repository.
 
 ---
 
@@ -252,38 +484,6 @@ Or rebuild after changes:
 
 ```bash
 docker compose up --build
-```
-
----
-
-# 🧪 Running Tests
-
-```bash
-uv run pytest
-```
-
----
-
-# 🎨 Formatting
-
-```bash
-uv run ruff format .
-```
-
----
-
-# 🔎 Lint
-
-```bash
-uv run ruff check .
-```
-
----
-
-# ✅ Type Checking
-
-```bash
-uv run mypy app
 ```
 
 ---
@@ -322,39 +522,40 @@ LOG_LEVEL=INFO
 
 ---
 
-## Phase 2 — Data Engineering 🚧
+## Phase 2 — Data Engineering ✅
 
 * [x] Dataset ingestion pipeline
 * [x] Dataset metadata models
 * [x] Dataset registry
-* [x] Raw data organization
+* [x] Dataset workspace
 * [x] Automated dataset download
-
-Upcoming:
-
-* [ ] DuckDB integration
-* [ ] Raw data loading
-* [ ] Data Warehouse modeling
-* [ ] Data validation
-* [ ] ETL pipeline
+* [x] Raw data organization
+* [x] DuckDB integration
+* [x] Raw data loading
+* [x] Warehouse schemas
+* [x] Data quality checks
+* [x] Analytical transformations
 
 ---
 
-## Phase 3 — Analytics
+## Phase 3 — Analytics 🚧
 
-* [ ] Analytical data models
-* [ ] KPI generation
-* [ ] Customer metrics
-* [ ] Sales metrics
-* [ ] Product metrics
+* [x] Order metrics
+* [x] Customer metrics
+* [x] RFM analysis
+* [x] Customer segmentation
 * [ ] Analytics API endpoints
+* [ ] KPI endpoints
+* [ ] Revenue analytics
+* [ ] Product analytics
+* [ ] Customer analytics
 
 ---
 
 ## Phase 4 — Machine Learning
 
 * [ ] Feature engineering
-* [ ] Customer segmentation
+* [ ] Customer segmentation models
 * [ ] Churn prediction
 * [ ] Recommendation models
 * [ ] Model evaluation pipeline
@@ -366,6 +567,7 @@ Upcoming:
 * [ ] Interactive dashboard
 * [ ] KPI visualization
 * [ ] Customer analytics
+* [ ] Customer segmentation views
 * [ ] Business intelligence views
 
 ---
@@ -374,12 +576,17 @@ Upcoming:
 
 Possible future extensions:
 
-* Data orchestration with Airflow or Dagster
 * CI/CD pipelines
 * Cloud deployment
 * Data quality monitoring
+* Workflow orchestration with Airflow or Dagster
 * Model tracking and experiment management
 * Real-time data ingestion
+* Automated dataset refresh
+* Production database
+* Authentication and authorization
+
+These features are intentionally kept outside the current scope until the core analytics platform is complete.
 
 ---
 

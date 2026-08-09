@@ -13,4 +13,4 @@ def test_olist_should_have_customer_file():
 
     filenames = [file.name for file in dataset.files]
 
-    assert "olist_customer_dataset.csv" in filenames
+    assert "olist_customers_dataset.csv" in filenames
