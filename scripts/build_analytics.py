@@ -3,7 +3,7 @@ from pathlib import Path
 from pipelines.analytics.customer_metrics import CustomerMetrics
 from pipelines.analytics.customer_rfm import CustomerRFM
 from pipelines.analytics.order_metrics import OrderMetrics
-from pipelines.warehouse.database import Database
+from pipelines.warehouse.database_config import Database
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

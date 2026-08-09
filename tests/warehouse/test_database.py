@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pipelines.warehouse.database import Database
+from pipelines.warehouse.database_config import Database
 
 
 def test_database_should_create_database_file(tmp_path: Path) -> None:

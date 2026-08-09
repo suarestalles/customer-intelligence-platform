@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pipelines.analytics.customer_rfm import CustomerRFM
-from pipelines.warehouse.database import Database
+from pipelines.warehouse.database_config import Database
 
 
 def test_customer_rfm_should_generate_scores(tmp_path: Path) -> None:

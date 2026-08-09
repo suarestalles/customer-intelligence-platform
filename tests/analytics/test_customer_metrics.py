@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pipelines.analytics.customer_metrics import CustomerMetrics
-from pipelines.warehouse.database import Database
+from pipelines.warehouse.database_config import Database
 
 
 def test_customer_metrics_should_aggregate_orders(tmp_path: Path) -> None:

@@ -64,6 +64,9 @@ select = [
 [tool.ruff.format]
 quote-style = "double"
 
+[tool.ruff.lint.per-file-ignores]
+"app/api/routes/*.py" = ["B008"]
+
 ##################################
 # MyPy
 ##################################

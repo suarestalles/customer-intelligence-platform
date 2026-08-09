@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pipelines.analytics.order_metrics import OrderMetrics
-from pipelines.warehouse.database import Database
+from pipelines.warehouse.database_config import Database
 
 
 def test_order_metrics_should_have_one_row_per_order(

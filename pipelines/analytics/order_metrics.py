@@ -1,4 +1,4 @@
-from pipelines.warehouse.database import Database
+from pipelines.warehouse.database_config import Database
 
 
 class OrderMetrics:
