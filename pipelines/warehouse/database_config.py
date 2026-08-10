@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import duckdb
 
@@ -16,9 +17,12 @@ class Database:
         with self.connect() as connection:
             connection.execute(query)
 
-    def query(self, query: str) -> list[tuple]:
+    def query(self, query: str, parameters: list[Any] | None = None) -> list[tuple]:
         with self.connect() as connection:
-            result = connection.execute(query)
+            if parameters:
+                result = connection.execute(query, parameters)
+            else:
+                result = connection.execute(query)
 
             return result.fetchall()
 
