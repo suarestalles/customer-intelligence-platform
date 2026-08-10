@@ -52,10 +52,9 @@ class MonthlyRevenueResponse(BaseModel):
 
 class RevenueResponse(BaseModel):
     total_revenue: float
-    total_orders: float
+    total_orders: int
     average_order_value: float
     monthly: list[MonthlyRevenueResponse]
-    order_status: str
 
 
 class ProductAnalyticsResponse(BaseModel):
@@ -86,3 +85,10 @@ class CategoryAnalyticsResponse(BaseModel):
 class CategoryAnalyticsListResponse(BaseModel):
     total_categories: int
     categories: list[CategoryAnalyticsResponse]
+
+
+class CustomerSummaryResponse(BaseModel):
+    total_customers: int
+    total_revenue: float
+    average_spend: float
+    average_orders: float

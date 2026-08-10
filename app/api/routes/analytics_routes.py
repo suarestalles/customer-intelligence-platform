@@ -7,6 +7,7 @@ from app.schemas.analytics_schema import (
     CustomerResponse,
     CustomerRFMResponse,
     CustomerSegmentResponse,
+    CustomerSummaryResponse,
     KPIResponse,
     ProductAnalyticsListResponse,
     RevenueResponse,
@@ -81,3 +82,10 @@ def get_product_categories(
     service: AnalyticsService = Depends(get_analytics_service),
 ) -> CategoryAnalyticsListResponse:
     return service.get_product_categories(limit, offset)
+
+
+@router.get("/customers/summary", response_model=CustomerSummaryResponse)
+def get_customer_summary(
+    service: AnalyticsService = Depends(get_analytics_service),
+) -> CustomerSummaryResponse:
+    return service.get_customer_summary()

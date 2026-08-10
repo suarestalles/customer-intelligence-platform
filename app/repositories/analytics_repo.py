@@ -17,7 +17,7 @@ class AnalyticsRepository:
                 AVG(recency) AS average_recency
             FROM analytics.customer_rfm
             GROUP BY segment
-            ORDER BY customers DESC
+            ORDER BY average_recency DESC
         """
 
         return self.database.query(query)
@@ -125,13 +125,11 @@ class AnalyticsRepository:
                     SUM(om.payment_value)
                     / NULLIF(COUNT(DISTINCT om.order_id), 0),
                     0
-                ) AS average_order_value,
-                o.order_status
+                ) AS average_order_value
             FROM analytics.order_metrics AS om
             LEFT JOIN raw.orders AS o
                 ON om.order_id = o.order_id
             WHERE o.order_status = 'delivered'
-            GROUP BY o.order_status
         """
 
         rows = self.database.query(query)
@@ -143,15 +141,18 @@ class AnalyticsRepository:
             SELECT
                 DATE_TRUNC(
                     'month',
-                    order_purchase_timestamp
+                    om.order_purchase_timestamp
                 ) AS month,
-                SUM(payment_value) AS revenue,
-                COUNT(DISTINCT order_id) AS orders,
-                SUM(payment_value)
-                    / NULLIF(COUNT(DISTINCT order_id), 0)
+                SUM(om.payment_value) AS revenue,
+                COUNT(DISTINCT om.order_id) AS orders,
+                SUM(om.payment_value)
+                    / NULLIF(COUNT(DISTINCT om.order_id), 0)
                     AS average_order_value
-            FROM analytics.order_metrics
-            WHERE order_purchase_timestamp IS NOT NULL
+            FROM analytics.order_metrics AS om
+            LEFT JOIN raw.orders AS o
+                ON om.order_id = o.order_id
+            WHERE o.order_status = 'delivered'
+                AND om.order_purchase_timestamp IS NOT NULL
             GROUP BY 1
             ORDER BY 1
         """
@@ -163,8 +164,30 @@ class AnalyticsRepository:
         category: str | None = None,
         limit: int = 50,
         offset: int = 0,
-    ) -> list[tuple[Any, ...]]:
-        query = """
+    ) -> tuple[Any, ...]:
+        where_clause = "WHERE o.order_status = 'delivered'"
+        params: list[Any] = []
+
+        if category:
+            where_clause = "WHERE p.product_category_name = ?"
+            params.append(category)
+
+        summary_query = f"""
+            SELECT
+                COUNT(DISTINCT oi.product_id) AS total_products,
+                COUNT(*) AS total_items,
+                COALESCE(SUM(oi.price), 0) AS total_revenue
+            FROM raw.order_items AS oi
+            INNER JOIN raw.orders AS o
+                ON oi.order_id = o.order_id
+            INNER JOIN raw.products AS p
+                ON oi.product_id = p.product_id
+            {where_clause}
+        """
+
+        summary = self.database.query(summary_query, params)
+
+        products_query = f"""
             SELECT
                 oi.product_id,
                 p.product_category_name,
@@ -178,19 +201,7 @@ class AnalyticsRepository:
                 ON oi.order_id = o.order_id
             LEFT JOIN raw.products AS p
                 ON oi.product_id = p.product_id
-            WHERE o.order_status = 'delivered'
-        """
-
-        parameters: list[Any] = []
-
-        if category is not None:
-            query += """
-                AND p.product_category_name = ?
-            """
-
-            parameters.append(category)
-
-        query += """
+            {where_clause}
             GROUP BY
                 oi.product_id,
                 p.product_category_name
@@ -198,22 +209,38 @@ class AnalyticsRepository:
             LIMIT ? OFFSET ?
         """
 
-        parameters.extend([limit, offset])
+        products = self.database.query(products_query, [*params, limit, offset])
 
-        return self.database.query(query, parameters)
+        return summary[0], products
 
     def get_product_categories(
         self,
         limit: int = 20,
         offset: int = 0,
-    ) -> list[tuple[Any, ...]]:
-        query = """
+    ) -> tuple[Any, ...]:
+        summary_query = """
+            SELECT
+                COUNT(DISTINCT p.product_category_name)
+            FROM raw.order_items AS oi
+
+            INNER JOIN raw.orders AS o
+                ON oi.order_id = o.order_id
+
+            LEFT JOIN raw.products AS p
+                ON oi.product_id = p.product_id
+
+            WHERE o.order_status = 'delivered'
+                AND p.product_category_name IS NOT NULL
+        """
+        summary = self.database.query(summary_query)
+
+        categories_query = """
             SELECT
                 p.product_category_name AS category,
                 COUNT(*) as total_items,
                 COUNT(DISTINCT oi.order_id) AS total_orders,
                 SUM(oi.price) AS total_revenue,
-                SUM(oi.freight_value) AS total_freight,
+                SUM(oi.freight_value) AS total_freight
             FROM raw.order_items AS oi
             INNER JOIN raw.orders AS o
                 ON oi.order_id = o.order_id
@@ -225,4 +252,20 @@ class AnalyticsRepository:
             LIMIT ? OFFSET ?
         """
 
-        return self.database.query(query, [limit, offset])
+        categories = self.database.query(categories_query, [limit, offset])
+
+        return summary[0], categories
+
+    def get_customer_summary(self) -> tuple[Any, ...]:
+        query = """
+            SELECT
+                COUNT(*) AS total_customers,
+                COALESCE(SUM(total_spent), 0) AS total_revenue,
+                COALESCE(AVG(total_spent), 0) AS average_spend,
+                COALESCE(AVG(total_orders), 0) AS average_orders
+            FROM analytics.customer_metrics
+        """
+
+        rows = self.database.query(query)
+
+        return rows[0]

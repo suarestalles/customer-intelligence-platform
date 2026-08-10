@@ -1,43 +1,51 @@
 # Customer Intelligence Platform
 
-An end-to-end Customer Intelligence Platform built with **Python**, **FastAPI**, **DuckDB**, and **Data Analytics**, following modern Software Engineering and Data Engineering practices.
+An end-to-end **Customer Intelligence Platform** built with **Python, FastAPI, DuckDB, SQL, Streamlit, and Data Analytics**, combining Software Engineering, Data Engineering, Analytics Engineering, and Business Intelligence practices.
 
-> **Status:** 🚧 In Development
+> **Status:** 🚀 MVP — Analytics Platform implemented, Dashboard integrated and functional
 
 ---
 
 # 📖 Overview
 
-The goal of this project is to simulate a real-world customer analytics platform used by an e-commerce company.
+The **Customer Intelligence Platform** is a portfolio project designed to simulate a real-world analytics platform for an e-commerce company.
 
-The platform is being developed incrementally to cover the complete data lifecycle:
+The project follows the complete analytical data flow:
 
-* Data ingestion
-* Raw data organization
-* Data warehousing
-* Data transformation
+```text
+External Dataset
+      ↓
+Data Ingestion
+      ↓
+Raw Data
+      ↓
+DuckDB
+      ↓
+Analytical Models
+      ↓
+Analytics API
+      ↓
+Streamlit Dashboard
+```
+
+The platform currently provides analytical capabilities for:
+
 * Customer analytics
 * Customer segmentation
-* REST API
-* Machine Learning
-* Interactive Dashboard
+* RFM analysis
+* Revenue analytics
+* Product analytics
+* Product category analysis
+* KPI monitoring
+* Interactive dashboard visualization
 
-The project combines **Software Engineering**, **Data Engineering**, and **Data Analytics** practices, following modern development standards such as:
-
-* Automated testing
-* Containerization
-* Type checking
-* Code formatting and linting
-* Pre-commit hooks
-* Reproducible data pipelines
-* Layered architecture
-* Documentation
+The project is being developed incrementally, with the goal of demonstrating how **Data Engineering, Analytics, Backend Development, and Software Engineering** can be combined into a single solution.
 
 ---
 
 # 🏗️ Architecture
 
-The current data architecture is:
+The current architecture separates data processing, analytical modeling, API access, and visualization.
 
 ```text
                          Public Dataset
@@ -51,22 +59,48 @@ The current data architecture is:
                               ▼
                             DuckDB
                               │
-                ┌─────────────┴─────────────┐
-                ▼                           ▼
-         order_metrics              customer_metrics
-                │                           │
-                └─────────────┬─────────────┘
-                              ▼
-                       customer_rfm
-                              │
-                              ▼
-                         Analytics API
-                              │
-                              ▼
-                          Dashboard
+                 ┌────────────┴─────────────┐
+                 │                          │
+                 ▼                          ▼
+          Analytical Models          Customer Models
+                 │                          │
+                 ├── order_metrics           ├── customer_metrics
+                 │                           └── customer_rfm
+                 │
+                 └──────────────┬────────────┘
+                                ▼
+                         Analytics Repository
+                                │
+                                ▼
+                          Analytics Service
+                                │
+                                ▼
+                            FastAPI
+                                │
+                                ▼
+                       Analytics API Client
+                                │
+                                ▼
+                          Streamlit Dashboard
 ```
 
-The project is being developed incrementally, starting from the software foundation and evolving toward a complete customer analytics platform.
+The application follows a layered architecture:
+
+```text
+Data Engineering
+      ↓
+DuckDB Analytical Layer
+      ↓
+Repository
+      ↓
+Service
+      ↓
+REST API
+      ↓
+Dashboard
+```
+
+This separation allows the analytical logic to remain independent from the visualization layer.
 
 ---
 
@@ -77,29 +111,33 @@ The project is being developed incrementally, starting from the software foundat
 * Python 3.12
 * FastAPI
 * Uvicorn
+* Pydantic
 * Pydantic Settings
 
 ## Data Engineering
 
 * DuckDB
 * Polars
-* HTTPX
 * SQL
+* PyArrow
+* Dataset ingestion pipeline
 
 ## Analytics
 
 * Customer metrics
 * Order metrics
+* Revenue analytics
+* Product analytics
+* Product category analytics
 * RFM analysis
 * Customer segmentation
 
-## Machine Learning — Planned
+## Dashboard
 
-* Scikit-learn
-* Feature Engineering pipelines
-* Predictive analytics
-* Churn prediction
-* Recommendation models
+* Streamlit
+* Streamlit charts
+* Reusable formatting utilities
+* REST API integration
 
 ## Development
 
@@ -114,6 +152,14 @@ The project is being developed incrementally, starting from the software foundat
 * Docker
 * Docker Compose
 
+## Machine Learning — Planned
+
+* Scikit-learn
+* Feature engineering pipelines
+* Predictive analytics
+* Churn prediction
+* Recommendation models
+
 ---
 
 # 📂 Project Structure
@@ -124,18 +170,37 @@ customer-intelligence-platform/
 ├── app/
 │   ├── api/
 │   │   └── routes/
-│   │       └── health.py
+│   │       ├── health_routes.py
+│   │       └── analytics_routes.py
 │   │
 │   ├── core/
+│   │   ├── application.py
 │   │   ├── config.py
+│   │   ├── database.py
 │   │   └── logging.py
 │   │
+│   ├── repositories/
+│   │   └── analytics_repo.py
+│   │
 │   ├── schemas/
+│   │   └── analytics_schema.py
+│   │
 │   ├── services/
+│   │   └── analytics_service.py
+│   │
 │   └── main.py
 │
-├── pipelines/
+├── dashboard/
+│   ├── app.py
+│   ├── api_client.py
+│   ├── utils/
+│   │   └── formatters.py
 │   │
+│   └── pages/
+│       ├── customers.py
+│       └── products.py
+│
+├── pipelines/
 │   ├── ingestion/
 │   │   ├── models.py
 │   │   ├── registry.py
@@ -149,7 +214,7 @@ customer-intelligence-platform/
 │   │   └── customer_rfm.py
 │   │
 │   └── warehouse/
-│       └── database.py
+│       └── database_config.py
 │
 ├── data/
 │   ├── external/
@@ -199,28 +264,11 @@ uv sync
 
 ---
 
-## Run locally
-
-```bash
-uv run uvicorn app.main:app --reload
-```
-
-The application will be available at:
-
-| URL                          | Description      |
-| ---------------------------- | ---------------- |
-| http://localhost:8000        | Root application |
-| http://localhost:8000/docs   | Swagger UI       |
-| http://localhost:8000/redoc  | ReDoc            |
-| http://localhost:8000/health | Health Check     |
-
----
-
 # 📥 Dataset Ingestion
 
 The project includes an ingestion pipeline responsible for downloading and organizing external datasets.
 
-Implemented features:
+Implemented capabilities include:
 
 * Dataset metadata modeling
 * Dataset registry
@@ -230,9 +278,7 @@ Implemented features:
 * Raw data organization
 * Dataset source abstraction
 
-Current dataset:
-
-**Brazilian E-Commerce Public Dataset by Olist**
+The current dataset is the **Brazilian E-Commerce Public Dataset by Olist**.
 
 The dataset contains information about:
 
@@ -250,38 +296,34 @@ Download the dataset:
 uv run python scripts/download_dataset.py
 ```
 
-The raw files are stored at:
+The raw files are stored under:
 
 ```text
 data/
 └── external/
     └── olist/
         └── raw/
-            ├── olist_customers_dataset.csv
-            ├── olist_orders_dataset.csv
-            ├── olist_products_dataset.csv
-            └── ...
 ```
 
-The ingestion process is designed to be **idempotent**. Existing files are not downloaded again unless explicitly requested.
+The ingestion process is designed to be **idempotent**, preventing unnecessary downloads when files already exist.
 
 ---
 
 # 🗄️ Data Warehouse
 
-The project uses **DuckDB** as the analytical database.
+The analytical database is implemented using **DuckDB**.
 
-The database is stored locally at:
+The database is stored at:
 
 ```text
 data/warehouse/customer_intelligence.duckdb
 ```
 
-The current warehouse is organized into logical layers.
+The warehouse is organized into logical schemas.
 
 ## Raw Layer
 
-The `raw` schema contains data loaded from the original CSV files.
+The `raw` schema contains data loaded from the original dataset.
 
 Examples:
 
@@ -290,17 +332,18 @@ raw.customers
 raw.orders
 raw.order_items
 raw.order_payments
+raw.products
 ```
 
-The Raw Layer preserves the original dataset structure and acts as the foundation for analytical transformations.
+The Raw Layer preserves the source data structure and provides the foundation for analytical transformations.
 
 ---
 
 # 📊 Analytics Layer
 
-The `analytics` schema contains transformed and business-oriented datasets.
+The `analytics` schema contains transformed and business-oriented models.
 
-Current models:
+Current analytical models include:
 
 ```text
 analytics.order_metrics
@@ -308,30 +351,24 @@ analytics.customer_metrics
 analytics.customer_rfm
 ```
 
+---
+
 ## Order Metrics
 
 `analytics.order_metrics` provides an order-level analytical model.
 
-The model consolidates information from:
-
-```text
-raw.orders
-raw.order_items
-raw.order_payments
-```
-
-while avoiding duplication caused by one-to-many relationships.
+The model consolidates information from multiple order-related datasets while avoiding duplication caused by one-to-many relationships.
 
 Current metrics include:
 
+* Order status
+* Order timestamps
 * Total items
 * Product value
 * Freight value
 * Payment value
-* Order status
-* Order timestamps
 
-A key data-quality rule is that each `order_id` must appear exactly once.
+A key data-quality principle is that each `order_id` should appear exactly once in the analytical model.
 
 ---
 
@@ -351,9 +388,9 @@ Current metrics include:
 
 ---
 
-## RFM Analysis
+# 🎯 RFM Analysis
 
-The project currently implements **RFM analysis** for customer segmentation.
+The platform implements **RFM analysis** for customer segmentation.
 
 RFM represents:
 
@@ -361,13 +398,13 @@ RFM represents:
 * **Frequency** — how frequently the customer purchases
 * **Monetary** — how much the customer spends
 
-The resulting model:
+The resulting analytical model is:
 
 ```text
 analytics.customer_rfm
 ```
 
-contains:
+It contains:
 
 * Recency
 * Frequency
@@ -378,7 +415,7 @@ contains:
 * RFM score
 * Customer segment
 
-Current customer segments include:
+Current segments include:
 
 ```text
 Champions
@@ -388,27 +425,367 @@ At Risk
 Lost
 ```
 
-These segments will later be used by the API and dashboard layers.
+---
+
+# 📡 Analytics API
+
+The Analytics API exposes the analytical models through REST endpoints.
+
+Base path:
+
+```text
+/api/v1/analytics
+```
+
+Interactive API documentation is available through Swagger:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+## KPI Analytics
+
+```http
+GET /api/v1/analytics/kpis
+```
+
+Provides:
+
+* Total customers
+* Total orders
+* Total revenue
+* Average order value
+
+---
+
+## Revenue Analytics
+
+```http
+GET /api/v1/analytics/revenue
+```
+
+Provides:
+
+* Total revenue
+* Total orders
+* Average order value
+* Monthly revenue
+* Monthly order volume
+* Monthly average order value
+
+---
+
+## Customer Segments
+
+```http
+GET /api/v1/analytics/segments
+```
+
+Provides aggregated information for each customer segment.
+
+Current metrics include:
+
+* Number of customers
+* Average spending
+* Average frequency
+* Average recency
+
+---
+
+## Customer Analytics
+
+```http
+GET /api/v1/analytics/customers
+```
+
+Returns customer-level analytical information.
+
+Supported parameters:
+
+```text
+segment
+limit
+offset
+```
+
+Example:
+
+```http
+GET /api/v1/analytics/customers?segment=Champions&limit=20
+```
+
+---
+
+## Customer Details
+
+```http
+GET /api/v1/analytics/customer/{customer_id}
+```
+
+Returns detailed customer information including:
+
+* Customer metrics
+* RFM metrics
+* Customer segment
+
+---
+
+## Customer Summary
+
+```http
+GET /api/v1/analytics/customers/summary
+```
+
+Provides aggregated customer indicators:
+
+* Total customers
+* Total revenue
+* Average customer spend
+* Average orders per customer
+
+---
+
+## Product Analytics
+
+```http
+GET /api/v1/analytics/products
+```
+
+Provides product-level analytical information.
+
+Current metrics include:
+
+* Product ID
+* Product category
+* Total items sold
+* Total orders
+* Product revenue
+* Freight value
+* Average item price
+
+Supported parameters:
+
+```text
+category
+limit
+offset
+```
+
+Example:
+
+```http
+GET /api/v1/analytics/products?limit=10
+```
+
+---
+
+## Product Categories
+
+```http
+GET /api/v1/analytics/products/categories
+```
+
+Provides aggregated analytics by product category.
+
+Current metrics include:
+
+* Total items
+* Total orders
+* Total revenue
+* Total freight
+
+---
+
+# 🎨 Streamlit Dashboard
+
+The project now includes an interactive dashboard built with **Streamlit**, consuming the Analytics API through a dedicated API client.
+
+The dashboard is organized into analytical views.
+
+## Overview
+
+The main dashboard provides:
+
+* Revenue
+* Orders
+* Customers
+* Average Order Value
+* Revenue over time
+* Customer segment distribution
+
+---
+
+## Customer Analytics
+
+The Customers page provides:
+
+* Total customers
+* Total revenue
+* Average customer spend
+* Average orders
+* Customer segment distribution
+* Customer-level analytical table
+* Segment filtering
+
+Customers can be filtered by RFM segment such as:
+
+```text
+Champions
+Loyal Customers
+Potential Loyalists
+At Risk
+Lost
+```
+
+---
+
+## Product Analytics
+
+The Products page provides:
+
+* Total products
+* Items sold
+* Revenue
+* Number of categories
+* Revenue by category
+* Top products
+* Product-level metrics
+* Category filtering
+
+Product-level information includes:
+
+* Product ID
+* Category
+* Revenue
+* Items sold
+* Orders
+* Average price
+
+---
+
+# 🧩 Dashboard Formatting
+
+The dashboard contains reusable formatting utilities to keep the presentation layer consistent across pages.
+
+Current formatting capabilities include:
+
+* Brazilian Real currency formatting
+* Thousands separators
+* Decimal precision control
+* Integer formatting
+* Date formatting
+* Consistent presentation of analytical values
+
+This keeps presentation concerns inside the dashboard layer rather than modifying the analytical values returned by the API.
+
+For example:
+
+```text
+Raw API value
+      ↓
+Dashboard formatter
+      ↓
+User-friendly presentation
+```
+
+This separation allows the API to continue returning structured numerical and temporal data while the dashboard controls how those values are displayed to users.
+
+---
+
+# 🧱 Application Architecture
+
+The backend follows a layered architecture:
+
+```text
+Route
+  │
+  ▼
+Service
+  │
+  ▼
+Repository
+  │
+  ▼
+Database
+  │
+  ▼
+DuckDB
+```
+
+### Routes
+
+Responsible for:
+
+* HTTP endpoints
+* Request parameters
+* Response models
+* Dependency injection
+
+### Services
+
+Responsible for:
+
+* Business logic
+* Data transformation
+* Response construction
+
+### Repositories
+
+Responsible for:
+
+* SQL queries
+* Data access
+* DuckDB interaction
+
+### Schemas
+
+Responsible for:
+
+* Response validation
+* API contracts
+* Data structures
+
+### Dashboard API Client
+
+Responsible for:
+
+* Communication with the Analytics API
+* Endpoint abstraction
+* HTTP requests
+* JSON response handling
+
+### Dashboard
+
+Responsible for:
+
+* Data visualization
+* User interaction
+* Filtering
+* Presentation formatting
+
+This separation keeps the API, analytical database, and visualization layer independently maintainable.
 
 ---
 
 # 🧪 Data Quality & Testing
 
-The project uses **Pytest** to validate the ingestion, warehouse, and analytical layers.
+The project uses **Pytest** to validate different parts of the data platform.
 
-Current tests cover:
+Testing areas include:
 
 * Dataset models
 * Dataset ingestion
 * File downloading
-* DuckDB database operations
-* Order-level transformations
-* Customer-level transformations
-* RFM calculations
+* DuckDB operations
+* Analytical transformations
 * Data duplication prevention
 * Analytical model integrity
 
-Run the complete test suite:
+The MVP also uses Swagger for manual API validation and Streamlit for end-to-end verification of the analytical flow.
+
+Run the test suite:
 
 ```bash
 uv run pytest
@@ -448,7 +825,7 @@ uv run mypy app
 
 # 🪝 Pre-commit
 
-The project uses **pre-commit** to automatically validate the code before commits.
+The project uses **pre-commit** to automatically validate code before commits.
 
 Configured checks include:
 
@@ -461,8 +838,6 @@ Run all hooks manually:
 ```bash
 uv run pre-commit run --all-files
 ```
-
-This helps prevent improperly formatted or invalid code from being committed to the repository.
 
 ---
 
@@ -486,6 +861,46 @@ Or rebuild after changes:
 docker compose up --build
 ```
 
+The API will be available at:
+
+```text
+http://localhost:8000
+```
+
+Swagger:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+# 📊 Running the Dashboard
+
+With the Analytics API running, start Streamlit with:
+
+```bash
+uv run streamlit run dashboard/app.py
+```
+
+The dashboard will be available at the URL displayed by Streamlit, typically:
+
+```text
+http://localhost:8501
+```
+
+The dashboard communicates with the API through:
+
+```text
+ANALYTICS_API_URL
+```
+
+Example:
+
+```env
+ANALYTICS_API_URL=http://localhost:8000
+```
+
 ---
 
 # 🌱 Environment Variables
@@ -499,6 +914,7 @@ APP_NAME=Customer Intelligence Platform
 VERSION=0.1.0
 ENVIRONMENT=development
 LOG_LEVEL=INFO
+ANALYTICS_API_URL=http://localhost:8000
 ```
 
 ---
@@ -538,21 +954,45 @@ LOG_LEVEL=INFO
 
 ---
 
-## Phase 3 — Analytics 🚧
+## Phase 3 — Analytics API ✅
 
 * [x] Order metrics
 * [x] Customer metrics
 * [x] RFM analysis
 * [x] Customer segmentation
-* [ ] Analytics API endpoints
-* [ ] KPI endpoints
-* [ ] Revenue analytics
-* [ ] Product analytics
-* [ ] Customer analytics
+* [x] Analytics API
+* [x] KPI endpoint
+* [x] Revenue analytics
+* [x] Monthly revenue analytics
+* [x] Customer analytics
+* [x] Customer detail endpoint
+* [x] Customer summary endpoint
+* [x] Product analytics
+* [x] Product category analytics
+* [x] API client for dashboard integration
 
 ---
 
-## Phase 4 — Machine Learning
+## Phase 4 — Dashboard ✅
+
+* [x] Streamlit dashboard foundation
+* [x] API integration
+* [x] KPI visualization
+* [x] Revenue over time
+* [x] Customer segmentation views
+* [x] Customer analytics
+* [x] Customer filtering
+* [x] Product analytics
+* [x] Product category analysis
+* [x] Product filtering
+* [x] Reusable formatting utilities
+* [x] Currency formatting
+* [x] Number formatting
+* [x] Date formatting
+
+---
+
+## Phase 5 — Machine Learning 🚧
 
 * [ ] Feature engineering
 * [ ] Customer segmentation models
@@ -562,31 +1002,106 @@ LOG_LEVEL=INFO
 
 ---
 
-## Phase 5 — Dashboard
+# 🔮 Future Improvements
 
-* [ ] Interactive dashboard
-* [ ] KPI visualization
-* [ ] Customer analytics
-* [ ] Customer segmentation views
-* [ ] Business intelligence views
+The current MVP establishes the core analytical platform. Future iterations may include:
+
+### Engineering
+
+* [ ] CI/CD pipelines
+* [ ] Automated API integration tests
+* [ ] API contract testing
+* [ ] Observability
+* [ ] Production configuration
+* [ ] Improved error handling
+* [ ] Authentication and authorization
+
+### Data Engineering
+
+* [ ] Data quality monitoring
+* [ ] Workflow orchestration with Airflow or Dagster
+* [ ] Automated dataset refresh
+* [ ] Cloud deployment
+* [ ] Production-grade analytical database
+
+### Dashboard
+
+* [ ] Advanced business intelligence views
+* [ ] Date-range filters
+* [ ] Comparative KPIs
+* [ ] Customer detail visualization
+* [ ] More advanced interactive charts
+* [ ] Export capabilities
+
+### Machine Learning
+
+* [ ] Feature engineering pipeline
+* [ ] Churn prediction
+* [ ] Customer lifetime value prediction
+* [ ] Recommendation systems
+* [ ] Experiment tracking
+* [ ] Model registry
+* [ ] Model monitoring
+
+These features are intentionally outside the current MVP scope and will be introduced incrementally after the analytical foundation has been consolidated.
 
 ---
 
-# 🔮 Future Improvements
+# 📌 Current MVP
 
-Possible future extensions:
+The current MVP provides a complete analytical flow from raw data to business visualization:
 
-* CI/CD pipelines
-* Cloud deployment
-* Data quality monitoring
-* Workflow orchestration with Airflow or Dagster
-* Model tracking and experiment management
-* Real-time data ingestion
-* Automated dataset refresh
-* Production database
-* Authentication and authorization
+```text
+Public Dataset
+      │
+      ▼
+Ingestion Pipeline
+      │
+      ▼
+Raw Data
+      │
+      ▼
+DuckDB
+      │
+      ▼
+Analytics Models
+      │
+      ├── Order Metrics
+      ├── Customer Metrics
+      └── RFM
+      │
+      ▼
+Analytics API
+      │
+      ├── KPIs
+      ├── Revenue
+      ├── Customers
+      ├── Customer Segments
+      └── Products
+      │
+      ▼
+Streamlit Dashboard
+      │
+      ├── Overview
+      ├── Customer Analytics
+      └── Product Analytics
+```
 
-These features are intentionally kept outside the current scope until the core analytics platform is complete.
+The platform currently demonstrates:
+
+* Data ingestion
+* Analytical data modeling
+* DuckDB-based analytics
+* Customer intelligence
+* RFM segmentation
+* REST API development
+* Dashboard development
+* API-to-dashboard integration
+* Data presentation and formatting
+* Automated development tooling
+* Containerization
+
+The next major evolution of the project is the introduction of **Machine Learning capabilities**, building predictive models on top of the analytical foundation already established.
 
 ---
 

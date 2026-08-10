@@ -43,7 +43,7 @@ class CustomerRFM:
                     monetary,
 
                     NTILE(5) OVER (
-                        ORDER BY recency DESC
+                        ORDER BY recency ASC
                     ) AS recency_score,
                     
                     NTILE(5) OVER (

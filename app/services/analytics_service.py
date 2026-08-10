@@ -7,6 +7,7 @@ from app.schemas.analytics_schema import (
     CustomerResponse,
     CustomerRFMResponse,
     CustomerSegmentResponse,
+    CustomerSummaryResponse,
     KPIResponse,
     MonthlyRevenueResponse,
     ProductAnalyticsListResponse,
@@ -100,19 +101,18 @@ class AnalyticsService:
         monthly = self.repository.get_monthly_revenue()
 
         return RevenueResponse(
-            total_revenue=round(float(total[0]), 3),
+            total_revenue=float(total[0]),
             total_orders=int(total[1]),
-            average_order_value=round(float(total[2]), 3),
+            average_order_value=float(total[2]),
             monthly=[
                 MonthlyRevenueResponse(
                     month=row[0].date() if hasattr(row[0], "date") else row[0],
-                    revenue=round(float(row[1]), 3),
+                    revenue=float(row[1]),
                     orders=int(row[2]),
-                    average_order_value=round(float(row[3]), 3),
+                    average_order_value=float(row[3]),
                 )
                 for row in monthly
             ],
-            order_status=total[3],
         )
 
     def get_products(
@@ -121,7 +121,7 @@ class AnalyticsService:
         limit: int = 20,
         offset: int = 0,
     ) -> ProductAnalyticsListResponse:
-        rows = self.repository.get_products(
+        summary, rows = self.repository.get_products(
             category,
             limit,
             offset,
@@ -133,17 +133,17 @@ class AnalyticsService:
                 product_category=row[1],
                 total_items=int(row[2]),
                 total_orders=int(row[3]),
-                total_revenue=round(float(row[4]), 3),
-                total_freight=round(float(row[5]), 3),
-                average_item_price=round(float(row[6]), 3),
+                total_revenue=float(row[4]),
+                total_freight=float(row[5]),
+                average_item_price=float(row[6]),
             )
             for row in rows
         ]
 
         return ProductAnalyticsListResponse(
-            total_products=len(products),
-            total_items=sum(product.total_items for product in products),
-            total_revenue=sum(product.total_revenue for product in products),
+            total_products=int(summary[0]),
+            total_items=int(summary[1]),
+            total_revenue=float(summary[2]),
             products=products,
         )
 
@@ -152,7 +152,7 @@ class AnalyticsService:
         limit: int = 20,
         offset: int = 0,
     ) -> CategoryAnalyticsListResponse:
-        rows = self.repository.get_product_categories(limit, offset)
+        summary, rows = self.repository.get_product_categories(limit, offset)
 
         categories = [
             CategoryAnalyticsResponse(
@@ -166,6 +166,16 @@ class AnalyticsService:
         ]
 
         return CategoryAnalyticsListResponse(
-            total_categories=len(categories),
+            total_categories=int(summary[0]),
             categories=categories,
+        )
+
+    def get_customer_summary(self) -> CustomerSummaryResponse:
+        row = self.repository.get_customer_summary()
+
+        return CustomerSummaryResponse(
+            total_customers=int(row[0]),
+            total_revenue=float(row[1]),
+            average_spend=float(row[2]),
+            average_orders=float(row[3]),
         )
