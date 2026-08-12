@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 from pipelines.analytics.customer_metrics import CustomerMetrics
@@ -19,6 +20,12 @@ def test_customer_metrics_should_aggregate_orders(tmp_path: Path) -> None:
             customer_unique_id VARCHAR
         );
 
+        CREATE TABLE raw.orders (
+            order_id VARCHAR,
+            customer_id VARCHAR,
+            order_status VARCHAR
+        );
+
         CREATE TABLE analytics.order_metrics (
             order_id VARCHAR,
             customer_id VARCHAR,
@@ -34,6 +41,22 @@ def test_customer_metrics_should_aggregate_orders(tmp_path: Path) -> None:
         """
         INSERT INTO raw.customers VALUES
             ('customer-1', 'unique-1');
+        """
+    )
+
+    database.execute(
+        """
+        INSERT INTO raw.orders VALUES
+            (
+                'order-1',
+                'customer-1',
+                'delivered'
+            ),
+            (
+                'order-2',
+                'customer-1',
+                'delivered'
+            );
         """
     )
 
@@ -85,8 +108,8 @@ def test_customer_metrics_should_aggregate_orders(tmp_path: Path) -> None:
             150.00,
             # DuckDB pode retornar os timestamps como datetime.
             # Ajustaremos a asserção caso necessário.
-            result[0][5],
-            result[0][6],
+            datetime(2026, 1, 1, 10, 0, 0),
+            datetime(2026, 1, 11, 10, 0, 0),
             10,
         )
     ]

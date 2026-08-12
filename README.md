@@ -2,7 +2,7 @@
 
 An end-to-end **Customer Intelligence Platform** built with **Python, FastAPI, DuckDB, SQL, Streamlit, and Data Analytics**, combining Software Engineering, Data Engineering, Analytics Engineering, and Business Intelligence practices.
 
-> **Status:** 🚀 MVP — Analytics Platform implemented, Dashboard integrated and functional
+> **Status:** 🚀 MVP — Analytics Platform implemented, Dashboard integrated, functional, and covered by automated tests
 
 ---
 
@@ -38,8 +38,9 @@ The platform currently provides analytical capabilities for:
 * Product category analysis
 * KPI monitoring
 * Interactive dashboard visualization
+* Automated testing of analytical models and API endpoints
 
-The project is being developed incrementally, with the goal of demonstrating how **Data Engineering, Analytics, Backend Development, and Software Engineering** can be combined into a single solution.
+The project is being developed incrementally, with the goal of demonstrating how Data Engineering, Analytics, Backend Development, Testing, and Software Engineering can be combined into a single solution.
 
 ---
 
@@ -48,7 +49,7 @@ The project is being developed incrementally, with the goal of demonstrating how
 The current architecture separates data processing, analytical modeling, API access, and visualization.
 
 ```text
-                         Public Dataset
+                        Public Dataset
                               │
                               ▼
                     Dataset Ingestion Pipeline
@@ -138,6 +139,14 @@ This separation allows the analytical logic to remain independent from the visua
 * Streamlit charts
 * Reusable formatting utilities
 * REST API integration
+
+## Testing
+
+* Pytest
+* FastAPI TestClient
+* Analytical model tests
+* API endpoint tests
+* Data quality assertions
 
 ## Development
 
@@ -231,7 +240,17 @@ customer-intelligence-platform/
 │
 ├── tests/
 │   ├── analytics/
-│   ├── ingestion/
+│   │   ├── test_customer_metrics.py
+│   │   ├── test_customer_rfm.py
+│   │   └── test_order_metrics.py
+│   │
+│   ├── api/
+│   │   ├── test_analytics.py
+│   │   └── test_health.py
+│   │
+│   ├── pipelines/
+│   │   └── ingestion/
+│   │
 │   └── warehouse/
 │
 ├── docker-compose.yml
@@ -771,21 +790,43 @@ This separation keeps the API, analytical database, and visualization layer inde
 
 # 🧪 Data Quality & Testing
 
-The project uses **Pytest** to validate different parts of the data platform.
+Testing is an important part of the project architecture.
 
-Testing areas include:
+The project uses Pytest to validate different layers of the platform.
 
-* Dataset models
-* Dataset ingestion
-* File downloading
-* DuckDB operations
-* Analytical transformations
-* Data duplication prevention
-* Analytical model integrity
+Current testing areas include:
 
-The MVP also uses Swagger for manual API validation and Streamlit for end-to-end verification of the analytical flow.
+* Ingestion
+        - Dataset models
+        - Dataset registry
+        - Dataset workspace
+        - File downloading
+        - Download idempotency
+* Warehouse
+        - DuckDB database operations
+        - Database initialization
+        - Data loading
+* Analytics
+        - Order-level aggregation
+        - Prevention of duplicated order records
+        - Customer-level aggregation
+        - Customer lifetime calculations
+        - RFM score generation
+        - RFM segment generation
+* API
+        - Health endpoint
+        - Analytics endpoints
+        - KPI responses
+        - Customer segment responses
+        -Response structure validation
+        -Response type validation
+        -Analytical value validation
 
-Run the test suite:
+Analytical tests use temporary DuckDB databases, allowing transformations to be tested in isolation without depending on the production warehouse.
+
+API tests use FastAPI's TestClient to validate the application through the HTTP layer.
+
+Run the complete test suite:
 
 ```bash
 uv run pytest
@@ -970,6 +1011,7 @@ ANALYTICS_API_URL=http://localhost:8000
 * [x] Product analytics
 * [x] Product category analytics
 * [x] API client for dashboard integration
+* [x] Response validation tests
 
 ---
 
@@ -992,7 +1034,22 @@ ANALYTICS_API_URL=http://localhost:8000
 
 ---
 
-## Phase 5 — Machine Learning 🚧
+## Phase 5 — Quality & CI/CD 🚧
+
+* [x] Automated analytical model tests
+* [x] Automated API tests
+* [x] Data transformation validation
+* [x] Response validation
+* [ ] GitHub Actions
+* [ ] Automated linting
+* [ ] Automated type checking
+* [ ] Automated test execution
+* [ ] CI pipeline
+* [ ] Build validation
+
+---
+
+## Phase 6 — Machine Learning 🚧
 
 * [ ] Feature engineering
 * [ ] Customer segmentation models
@@ -1098,10 +1155,15 @@ The platform currently demonstrates:
 * Dashboard development
 * API-to-dashboard integration
 * Data presentation and formatting
+* Automated testing
+* Data quality validation
+* API response validation
 * Automated development tooling
 * Containerization
 
-The next major evolution of the project is the introduction of **Machine Learning capabilities**, building predictive models on top of the analytical foundation already established.
+The next major evolution of the project is CI/CD, automating the validation of formatting, linting, type checking, and tests whenever changes are pushed to the repository.
+
+After establishing the CI pipeline, the project can evolve toward Machine Learning capabilities, building predictive models on top of the analytical foundation already established.
 
 ---
 

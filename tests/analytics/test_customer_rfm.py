@@ -53,6 +53,9 @@ def test_customer_rfm_should_generate_scores(tmp_path: Path) -> None:
             recency,
             frequency,
             monetary,
+            recency_score,
+            frequency_score,
+            monetary_score,
             rfm_score,
             segment
         FROM analytics.customer_rfm
@@ -62,11 +65,41 @@ def test_customer_rfm_should_generate_scores(tmp_path: Path) -> None:
 
     assert len(result) == 3
 
+    customer1 = result[0]
+    customer2 = result[1]
+    customer3 = result[2]
+
+    assert customer1[0] == "customer-1"
+    assert customer1[1] == 0
+    assert customer1[2] == 10
+    assert float(customer1[3]) == 1000.00
+
+    assert customer2[0] == "customer-2"
+    assert customer2[1] == 31
+    assert customer2[2] == 5
+    assert float(customer2[3]) == 500.00
+
+    assert customer3[0] == "customer-3"
+    assert customer3[1] == 212
+    assert customer3[2] == 1
+    assert float(customer3[3]) == 50.00
+
     for row in result:
-        rfm_score = row[4]
+        recency_score = row[4]
+        frequency_score = row[4]
+        monetary_score = row[4]
+        rfm_score = row[7]
+        segment = row[8]
+
+        assert 1 <= recency_score <= 5
+        assert 1 <= frequency_score <= 5
+        assert 1 <= monetary_score <= 5
+
+        assert rfm_score == (recency_score + frequency_score + monetary_score)
 
         assert 3 <= rfm_score <= 15
-        assert row[5] in {
+
+        assert segment in {
             "Champions",
             "Loyal Customers",
             "Potential Loyalists",

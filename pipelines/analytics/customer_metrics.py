@@ -13,8 +13,10 @@ class CustomerMetrics:
 
             WITH delivered_orders AS (
                 SELECT *
-                FROM analytics.order_metrics
-                WHERE order_status = 'delivered'
+                FROM analytics.order_metrics AS om
+                INNER JOIN raw.orders o
+                    ON om.order_id = o.order_id
+                WHERE o.order_status = 'delivered'
             )
 
             SELECT

@@ -4,7 +4,7 @@ from pipelines.analytics.order_metrics import OrderMetrics
 from pipelines.warehouse.database_config import Database
 
 
-def test_order_metrics_should_have_one_row_per_order(
+def test_order_metrics_should_aggregate_order_data(
     tmp_path: Path,
 ) -> None:
     database_path = tmp_path / "warehouse" / "test.duckdb"
@@ -52,6 +52,16 @@ def test_order_metrics_should_have_one_row_per_order(
             NULL,
             NULL,
             NULL
+        ),
+        (
+            'order-2',
+            'customer-2',
+            'delivered',
+            '2026-01-02 10:00:00',
+            NULL,
+            NULL,
+            NULL,
+            NULL
         );
         """
     )
@@ -60,7 +70,8 @@ def test_order_metrics_should_have_one_row_per_order(
         """
         INSERT INTO raw.order_items VALUES
             ('order-1', 1, 100.00, 10.00),
-            ('order-1', 2, 50.00, 5.00);
+            ('order-1', 2, 50.00, 5.00),
+            ('order-2', 1, 200.00, 20.00);
         """
     )
 
@@ -68,7 +79,8 @@ def test_order_metrics_should_have_one_row_per_order(
         """
         INSERT INTO raw.order_payments VALUES
             ('order-1', 100.00),
-            ('order-1', 65.00);
+            ('order-1', 65.00),
+            ('order-2', 200.00);
         """
     )
 
@@ -93,5 +105,12 @@ def test_order_metrics_should_have_one_row_per_order(
             150.00,
             15.00,
             165.00,
-        )
+        ),
+        (
+            "order-2",
+            1,
+            200.00,
+            20.00,
+            200.00,
+        ),
     ]
