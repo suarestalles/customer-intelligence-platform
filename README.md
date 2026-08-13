@@ -2,7 +2,7 @@
 
 An end-to-end **Customer Intelligence Platform** built with **Python, FastAPI, DuckDB, SQL, Streamlit, and Data Analytics**, combining Software Engineering, Data Engineering, Analytics Engineering, and Business Intelligence practices.
 
-> **Status:** 🚀 MVP — Analytics Platform implemented, Dashboard integrated, functional, and covered by automated tests
+> **Status:** 🚀 MVP — Analytics Platform implemented, Dashboard integrated, Data Quality validated, and CI/CD automated with GitHub Actions
 
 ---
 
@@ -222,6 +222,10 @@ customer-intelligence-platform/
 │   │   ├── customer_metrics.py
 │   │   └── customer_rfm.py
 │   │
+│   ├── quality/
+│   │   ├── checks.py
+│   │   └── contracts.py
+│   │
 │   └── warehouse/
 │       └── database_config.py
 │
@@ -236,6 +240,7 @@ customer-intelligence-platform/
 ├── scripts/
 │   ├── download_dataset.py
 │   ├── check_database.py
+│   ├── check_data_quality.py
 │   └── build_analytics.py
 │
 ├── tests/
@@ -790,41 +795,87 @@ This separation keeps the API, analytical database, and visualization layer inde
 
 # 🧪 Data Quality & Testing
 
-Testing is an important part of the project architecture.
+Testing and data quality validation are core parts of the project architecture.
 
-The project uses Pytest to validate different layers of the platform.
+The project uses **Pytest** for automated testing and includes a dedicated **Data Quality framework** for validating the analytical warehouse.
+
+## Automated Testing
 
 Current testing areas include:
 
 * Ingestion
-        - Dataset models
-        - Dataset registry
-        - Dataset workspace
-        - File downloading
-        - Download idempotency
+  - Dataset models
+  - Dataset registry
+  - Dataset workspace
+  - File downloading
+  - Download idempotency
 * Warehouse
-        - DuckDB database operations
-        - Database initialization
-        - Data loading
+  - DuckDB database operations
+  - Database initialization
+  - Data loading
 * Analytics
-        - Order-level aggregation
-        - Prevention of duplicated order records
-        - Customer-level aggregation
-        - Customer lifetime calculations
-        - RFM score generation
-        - RFM segment generation
+  - Order-level aggregation
+  - Prevention of duplicated order records
+  - Customer-level aggregation
+  - Customer lifetime calculations
+  - RFM score generation
+  - RFM segment generation
 * API
-        - Health endpoint
-        - Analytics endpoints
-        - KPI responses
-        - Customer segment responses
-        -Response structure validation
-        -Response type validation
-        -Analytical value validation
+  - Health endpoint
+  - Analytics endpoints
+  - KPI responses
+  - Customer segment responses
+  - Response structure validation
+  - Response type validation
+  - Analytical value validation
+* Data Quality
+  - Table existence
+  - Table population
+  - Column type contracts
+  - Null checks
+  - Uniqueness checks
+  - Composite uniqueness
+  - Foreign-key integrity
+  - Non-negative financial values
+  - Analytical model validation
+  - Revenue reconciliation
+  - Customer metric validation
+  - RFM score and segment validation
 
 Analytical tests use temporary DuckDB databases, allowing transformations to be tested in isolation without depending on the production warehouse.
 
-API tests use FastAPI's TestClient to validate the application through the HTTP layer.
+API tests use FastAPI's `TestClient` to validate the application through the HTTP layer.
+
+## Data Quality Framework
+
+The Data Quality layer defines explicit contracts for the raw and analytical schemas.
+
+The framework validates:
+
+```text
+Raw Layer
+   │
+   ├── Schema existence
+   ├── Table population
+   ├── Column types
+   ├── Null constraints
+   ├── Uniqueness
+   ├── Foreign keys
+   └── Numeric constraints
+            │
+            ▼
+Analytics Layer
+   │
+   ├── Schema existence
+   ├── Table population
+   ├── Column types
+   ├── Uniqueness
+   ├── Revenue reconciliation
+   ├── Metric validity
+   ├── Date consistency
+   ├── Lifetime calculations
+   ├── RFM scores
+   └── Customer segmentation
 
 Run the complete test suite:
 
@@ -866,7 +917,9 @@ uv run mypy app
 
 # 🪝 Pre-commit
 
-The project uses **pre-commit** to automatically validate code before commits.
+The project uses **pre-commit** to perform local validation before commits.
+
+GitHub Actions provides an additional CI quality gate that validates every push and pull request.
 
 Configured checks include:
 
@@ -1040,22 +1093,27 @@ ANALYTICS_API_URL=http://localhost:8000
 * [x] Automated API tests
 * [x] Data transformation validation
 * [x] Response validation
-* [ ] GitHub Actions
-* [ ] Automated linting
-* [ ] Automated type checking
-* [ ] Automated test execution
-* [ ] CI pipeline
-* [ ] Build validation
+* [x] Data quality validation
+* [x] GitHub Actions
+* [x] Automated linting
+* [x] Automated type checking
+* [x] Automated test execution
+* [x] CI pipeline
+* [x] Docker build validation
 
 ---
 
 ## Phase 6 — Machine Learning 🚧
 
 * [ ] Feature engineering
-* [ ] Customer segmentation models
-* [ ] Churn prediction
-* [ ] Recommendation models
+* [ ] Churn definition and labeling
+* [ ] Training dataset generation
+* [ ] Churn prediction model
 * [ ] Model evaluation pipeline
+* [ ] Prediction persistence
+* [ ] Churn prediction API
+* [ ] Dashboard integration
+* [ ] Recommendation models
 
 ---
 
@@ -1159,11 +1217,15 @@ The platform currently demonstrates:
 * Data quality validation
 * API response validation
 * Automated development tooling
+* Continuous integration with GitHub Actions
+* Automated quality gates
 * Containerization
 
-The next major evolution of the project is CI/CD, automating the validation of formatting, linting, type checking, and tests whenever changes are pushed to the repository.
+The current MVP has established an automated quality gate through GitHub Actions, validating formatting, linting, type checking, automated tests, and data quality.
 
-After establishing the CI pipeline, the project can evolve toward Machine Learning capabilities, building predictive models on top of the analytical foundation already established.
+The next major evolution of the project is Machine Learning, building predictive capabilities on top of the analytical foundation already established.
+
+The planned ML phase will initially focus on feature engineering and customer churn prediction, integrating machine learning into the existing analytical platform rather than creating an isolated modeling workflow.
 
 ---
 

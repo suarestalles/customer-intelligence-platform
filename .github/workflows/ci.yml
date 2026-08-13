@@ -41,3 +41,6 @@ jobs:
 
       - name: Run type checking
         run: uv run mypy app
+
+      - name: Validate Docker build
+        run: docker compose build
