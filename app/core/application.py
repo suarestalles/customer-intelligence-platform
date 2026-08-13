@@ -17,7 +17,11 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
     setup_logging()
 
-    logger.info("Application starting...")
+    logger.info(
+        "Application starting | environment=%s | version=%s",
+        settings.environment,
+        settings.version,
+    )
 
     yield
 

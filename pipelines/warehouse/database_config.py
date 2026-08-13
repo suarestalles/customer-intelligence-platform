@@ -28,3 +28,10 @@ class Database:
 
     def create_schema(self, schema_name: str) -> None:
         self.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+
+    def health_check(self) -> bool:
+        try:
+            self.query("SELECT 1")
+            return True
+        except Exception:
+            return False

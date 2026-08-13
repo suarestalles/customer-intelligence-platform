@@ -9,4 +9,16 @@ def test_health_check() -> None:
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "Healthy"}
+    data = response.json()
+    assert data["status"].capitalize() == "Healthy"
+
+
+def test_readiness() -> None:
+    response = client.get("/health/ready")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "ready"
+    assert data["database"] == "healthy"
