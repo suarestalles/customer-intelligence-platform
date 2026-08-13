@@ -11,6 +11,13 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Code Quality
@@ -29,6 +36,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           version: latest
+          enable-cache: true
 
       - name: Install dependencies
         run: uv sync --locked
