@@ -269,3 +269,19 @@ class AnalyticsRepository:
         rows = self.database.query(query)
 
         return rows[0]
+
+    def get_customer_cohorts(self) -> list[tuple[Any, ...]]:
+        query = """
+            SELECT
+                cohort_month,
+                months_since_first_purchase,
+                customers,
+                retained_customers,
+                retention_rate
+            FROM analytics.customer_cohorts
+            ORDER BY
+                cohort_month,
+                months_since_first_purchase
+        """
+
+        return self.database.query(query)

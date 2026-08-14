@@ -4,6 +4,7 @@ from app.repositories.analytics_repo import AnalyticsRepository
 from app.schemas.analytics_schema import (
     CategoryAnalyticsListResponse,
     CategoryAnalyticsResponse,
+    CustomerCohortResponse,
     CustomerResponse,
     CustomerRFMResponse,
     CustomerSegmentResponse,
@@ -179,3 +180,19 @@ class AnalyticsService:
             average_spend=float(row[2]),
             average_orders=float(row[3]),
         )
+
+    def get_customer_cohorts(
+        self,
+    ) -> list[CustomerCohortResponse]:
+        rows = self.repository.get_customer_cohorts()
+
+        return [
+            CustomerCohortResponse(
+                cohort_month=row[0],
+                months_since_first_purchase=row[1],
+                customers=row[2],
+                retained_customers=row[3],
+                retention_rate=float(row[4]),
+            )
+            for row in rows
+        ]

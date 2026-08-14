@@ -33,6 +33,7 @@ The platform currently provides analytical capabilities for:
 * Customer analytics
 * Customer segmentation
 * RFM analysis
+* Customer cohort analysis
 * Revenue analytics
 * Product analytics
 * Product category analysis
@@ -67,7 +68,7 @@ The current architecture separates data processing, analytical modeling, API acc
                  │                          │
                  ├── order_metrics           ├── customer_metrics
                  │                           └── customer_rfm
-                 │
+                 │                           └── customer_cohorts
                  └──────────────┬────────────┘
                                 ▼
                          Analytics Repository
@@ -225,6 +226,7 @@ customer-intelligence-platform/
 │   └── pages/
 │       ├── customers.py
 │       └── products.py
+│       └── cohorts.py
 │
 ├── pipelines/
 │   ├── ingestion/
@@ -262,12 +264,14 @@ customer-intelligence-platform/
 │
 ├── tests/
 │   ├── analytics/
+│   │   ├── test_customer_cohorts.py
 │   │   ├── test_customer_metrics.py
 │   │   ├── test_customer_rfm.py
 │   │   └── test_order_metrics.py
 │   │
 │   ├── api/
 │   │   ├── test_analytics.py
+│   │   ├── test_cohorts.py
 │   │   └── test_health.py
 │   │
 │   ├── pipelines/
@@ -390,6 +394,7 @@ Current analytical models include:
 analytics.order_metrics
 analytics.customer_metrics
 analytics.customer_rfm
+analytics.customer_cohorts
 ```
 
 ---
@@ -465,6 +470,31 @@ Potential Loyalists
 At Risk
 Lost
 ```
+
+---
+
+## Customer Cohorts
+
+`analytics.customer_cohorts` provides a cohort-based view of customer retention.
+
+Customers are grouped according to their first purchase month, allowing customer activity to be analyzed over subsequent months.
+
+The model includes:
+
+* Cohort month
+* Months since first purchase
+* Cohort size
+* Retained customers
+* Retention rate
+
+The cohort model prevents duplicate customer activity within the same month and ignores orders without a purchase timestamp.
+
+Example:
+
+```text
+Cohort Month   Month 0   Month 1   Month 2   Month 3
+2024-01        100%      100%       0%       100%
+2024-03        100%        0%     100%        0%
 
 ---
 
@@ -1073,6 +1103,7 @@ ANALYTICS_API_URL=http://localhost:8000
 * [x] Customer metrics
 * [x] RFM analysis
 * [x] Customer segmentation
+* [x] Customer cohort analysis
 * [x] Analytics API
 * [x] KPI endpoint
 * [x] Revenue analytics
@@ -1080,6 +1111,7 @@ ANALYTICS_API_URL=http://localhost:8000
 * [x] Customer analytics
 * [x] Customer detail endpoint
 * [x] Customer summary endpoint
+* [x] Customer cohort endpoint
 * [x] Product analytics
 * [x] Product category analytics
 * [x] API client for dashboard integration
@@ -1096,6 +1128,8 @@ ANALYTICS_API_URL=http://localhost:8000
 * [x] Customer segmentation views
 * [x] Customer analytics
 * [x] Customer filtering
+* [x] Customer cohort analysis
+* [x] Customer retention visualization
 * [x] Product analytics
 * [x] Product category analysis
 * [x] Product filtering
@@ -1223,6 +1257,7 @@ Analytics Models
       ├── Order Metrics
       ├── Customer Metrics
       └── RFM
+      └── Customer Cohorts
       │
       ▼
 Analytics API
@@ -1231,6 +1266,7 @@ Analytics API
       ├── Revenue
       ├── Customers
       ├── Customer Segments
+      ├── Customer Cohorts
       └── Products
       │
       ▼
@@ -1238,6 +1274,7 @@ Streamlit Dashboard
       │
       ├── Overview
       ├── Customer Analytics
+      ├── Customer Cohorts
       └── Product Analytics
 ```
 
@@ -1248,6 +1285,8 @@ The platform currently demonstrates:
 * DuckDB-based analytics
 * Customer intelligence
 * RFM segmentation
+* Customer cohort analysis
+* Customer retention analysis
 * REST API development
 * Dashboard development
 * API-to-dashboard integration
@@ -1269,7 +1308,9 @@ The current MVP has established an automated quality gate through GitHub Actions
 
 The project now includes a CI/CD validation pipeline through GitHub Actions, automatically validating formatting, linting, type checking, automated tests, and Docker image builds on pushes and pull requests.
 
-With the analytical foundation, Data Quality framework, automated testing, containerization, and CI/CD pipeline established, the next evolution of the project is production readiness and observability before introducing Machine Learning capabilities.
+With the analytical foundation, customer segmentation, cohort analysis, Data Quality framework, automated testing, containerization, CI/CD pipeline, and production-oriented architecture established, the next evolution of the project is the Machine Learning layer.
+
+The Machine Learning phase will build predictive capabilities on top of the existing customer analytics foundation, starting with feature engineering and churn prediction.
 
 ---
 

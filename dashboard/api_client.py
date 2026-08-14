@@ -51,3 +51,6 @@ class AnalyticsAPIClient:
 
     def get_customer_summary(self) -> dict[str, Any]:
         return self._get("/api/v1/analytics/customers/summary")
+
+    def get_customer_cohorts(self) -> dict[str, Any]:
+        return self._get("/api/v1/analytics/cohorts")

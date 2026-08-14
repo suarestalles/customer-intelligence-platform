@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pipelines.analytics.customer_cohorts import CustomerCohorts
 from pipelines.analytics.customer_metrics import CustomerMetrics
 from pipelines.analytics.customer_rfm import CustomerRFM
 from pipelines.analytics.order_metrics import OrderMetrics
@@ -16,6 +17,7 @@ def main() -> None:
     OrderMetrics(database).build()
     CustomerMetrics(database).build()
     CustomerRFM(database).build()
+    CustomerCohorts(database).build()
 
     print("Analytics models built successfully.")
 

@@ -4,6 +4,7 @@ from app.core.database import get_database
 from app.repositories.analytics_repo import AnalyticsRepository
 from app.schemas.analytics_schema import (
     CategoryAnalyticsListResponse,
+    CustomerCohortResponse,
     CustomerResponse,
     CustomerRFMResponse,
     CustomerSegmentResponse,
@@ -89,3 +90,10 @@ def get_customer_summary(
     service: AnalyticsService = Depends(get_analytics_service),
 ) -> CustomerSummaryResponse:
     return service.get_customer_summary()
+
+
+@router.get("/cohorts", response_model=list[CustomerCohortResponse])
+def get_customer_cohorts(
+    service: AnalyticsService = Depends(get_analytics_service),
+) -> list[CustomerCohortResponse]:
+    return service.get_customer_cohorts()

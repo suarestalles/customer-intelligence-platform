@@ -92,3 +92,11 @@ class CustomerSummaryResponse(BaseModel):
     total_revenue: float
     average_spend: float
     average_orders: float
+
+
+class CustomerCohortResponse(BaseModel):
+    cohort_month: date
+    months_since_first_purchase: int
+    customers: int
+    retained_customers: int
+    retention_rate: float
