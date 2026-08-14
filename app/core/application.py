@@ -8,7 +8,9 @@ from fastapi import FastAPI
 from app.api.routes.analytics_routes import router as analytics_router
 from app.api.routes.health_routes import router as health_router
 from app.core.config import settings
+from app.core.exceptions_handle import unhandled_exception_handler
 from app.core.logging import setup_logging
+from app.core.middleware import request_logging_middleware
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,13 @@ def create_app() -> FastAPI:
         version=settings.version,
         description="End-to-end Customer Intelligence Platform",
         lifespan=lifespan,
+    )
+
+    app.middleware("http")(request_logging_middleware)
+
+    app.add_exception_handler(
+        Exception,
+        unhandled_exception_handler,
     )
 
     app.include_router(health_router)
