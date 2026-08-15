@@ -16,14 +16,12 @@ from sklearn.preprocessing import StandardScaler
 
 class ChurnModel:
     FEATURES = [
-        "total_orders",
-        "total_items",
-        "total_spent",
-        "average_order_value",
-        "customer_lifetime_days",
-        "recency",
         "frequency",
         "monetary",
+        "average_order_value",
+        "total_items",
+        "customer_lifetime_days",
+        "recency",
     ]
 
     def __init__(self, model_path: Path) -> None:

@@ -27,78 +27,40 @@ class CustomerChurnDataset:
                 FROM reference_date
             ),
 
-            customer_orders AS (
-                SELECT
-                    c.customer_unique_id,
-                    CAST(o.order_purchase_timestamp AS DATE)
-                    AS order_date
+            future_orders AS (
+                SELECT DISTINCT
+                    c.customer_unique_id
                 FROM raw.orders AS o
 
                 INNER JOIN raw.customers AS c
                     ON o.customer_id = c.customer_id
 
+                CROSS JOIN cutoff_date
+
                 WHERE o.order_purchase_timestamp IS NOT NULL
-            ),
 
-            historical_orders AS (
-                SELECT
-                    customer_unique_id,
-                    order_date
-                FROM customer_orders
-                CROSS JOIN cutoff_date
-                WHERE order_date <= cutoff_date
-            ),
+                    AND CAST(
+                        o.order_purchase_timestamp AS DATE
+                    ) > cutoff_date
 
-            customer_features AS (
-                SELECT
-                    customer_unique_id,
-
-                    COUNT(*) AS frequency,
-
-                    MIN(order_date) AS first_order_date,
-
-                    MAX(order_date) AS last_order_date,
-
-                    DATE_DIFF(
-                        'day',
-                        MIN(order_date),
-                        MAX(order_date)
-                    ) AS customer_lifetime_days,
-
-                    DATE_DIFF(
-                        'day',
-                        MAX(order_date),
-                        cutoff_date
-                    ) AS recency
-
-                FROM historical_orders
-
-                CROSS JOIN cutoff_date
-
-                GROUP BY
-                    customer_unique_id,
-                    cutoff_date
-            ),
-
-            future_orders AS (
-                SELECT DISTINCT
-                    ho.customer_unique_id
-                FROM customer_orders AS ho
-
-                CROSS JOIN cutoff_date
-
-                WHERE ho.order_date > cutoff_date
-                    AND ho.order_date <= cutoff_date + INTERVAL '90 days'
+                    AND CAST(
+                        o.order_purchase_timestamp AS DATE
+                    ) <= cutoff_date + INTERVAL '90 days'
             )
 
             SELECT
                 cf.customer_unique_id,
 
-                cf.frequency,
+                cf.total_orders,
+                cf.total_items,
+                cf.total_spent,
+                cf.average_order_value,
                 cf.first_order_date,
                 cf.last_order_date,
                 cf.customer_lifetime_days,
                 cf.recency,
+                cf.frequency,
+                cf.monetary,
 
                 CASE
                     WHEN fo.customer_unique_id IS NULL
@@ -106,7 +68,7 @@ class CustomerChurnDataset:
                     ELSE 0
                 END AS churn
 
-            FROM customer_features AS cf
+            FROM analytics.customer_features AS cf
 
             LEFT JOIN future_orders AS fo
                 ON cf.customer_unique_id =

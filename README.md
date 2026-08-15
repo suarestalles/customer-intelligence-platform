@@ -2,7 +2,8 @@
 
 An end-to-end **Customer Intelligence Platform** built with **Python, FastAPI, DuckDB, SQL, Streamlit, and Data Analytics**, combining Software Engineering, Data Engineering, Analytics Engineering, and Business Intelligence practices.
 
-> **Status:** 🚀 MVP — Analytics Platform with Data Quality, automated testing, CI/CD, Docker, production-oriented configuration, health checks, and observability foundations
+> **Status:** 🚀 MVP — Analytics Platform with Data Quality, automated testing, CI/CD, Docker, production-oriented configuration, health checks, observability foundations, and Machine Learning foundations
+
 
 ---
 
@@ -28,7 +29,7 @@ Analytics API
 Streamlit Dashboard
 ```
 
-The platform currently provides analytical capabilities for:
+The platform currently provides analytical and machine learning capabilities for:
 
 * Customer analytics
 * Customer segmentation
@@ -39,7 +40,13 @@ The platform currently provides analytical capabilities for:
 * Product category analysis
 * KPI monitoring
 * Interactive dashboard visualization
-* Automated testing of analytical models and API endpoints
+* Customer feature engineering
+* Churn labeling
+* Churn training dataset generation
+* Churn model training
+* Model evaluation
+* Automated testing of analytical models and ML pipelines
+
 
 The project is being developed incrementally, with the goal of demonstrating how Data Engineering, Analytics, Backend Development, Testing, and Software Engineering can be combined into a single solution.
 
@@ -67,11 +74,20 @@ The current architecture separates data processing, analytical modeling, API acc
           Analytical Models          Customer Models
                  │                          │
                  ├── order_metrics           ├── customer_metrics
-                 │                           └── customer_rfm
+                 │                           ├── customer_rfm
                  │                           └── customer_cohorts
+                 │
                  └──────────────┬────────────┘
                                 ▼
+                         Machine Learning
+                                │
+                    ├── customer_features
+                    ├── churn_dataset
+                    └── churn_model
+                                │
+                                ▼
                          Analytics Repository
+
                                 │
                                 ▼
                           Analytics Service
@@ -99,6 +115,10 @@ Data Engineering
       ↓
 DuckDB Analytical Layer
       ↓
+Feature Engineering
+      ↓
+Machine Learning
+      ↓
 Repository
       ↓
 Service
@@ -106,6 +126,7 @@ Service
 REST API
       ↓
 Dashboard
+
 ```
 
 This separation allows the analytical logic to remain independent from the visualization layer.
@@ -179,13 +200,20 @@ This separation allows the analytical logic to remain independent from the visua
 * Docker
 * Docker Compose
 
-## Machine Learning — Planned
+## Machine Learning
 
 * Scikit-learn
+* Pandas
+* Joblib
 * Feature engineering pipelines
-* Predictive analytics
+* Training dataset generation
+* Churn labeling
+* Logistic Regression
+* StandardScaler
+* Model evaluation
 * Churn prediction
-* Recommendation models
+* Recommendation models — planned
+
 
 ---
 
@@ -241,12 +269,20 @@ customer-intelligence-platform/
 │   │   ├── customer_metrics.py
 │   │   └── customer_rfm.py
 │   │
+│   ├── ml/
+│   │   ├── customer_features.py
+│   │   ├── customer_churn_dataset.py
+│   │   ├── churn_dataset.py
+│   │   ├── churn_model.py
+│   │   └── churn_pipeline.py
+│   │
 │   ├── quality/
 │   │   ├── checks.py
 │   │   └── contracts.py
 │   │
 │   └── warehouse/
 │       └── database_config.py
+
 │
 ├── data/
 │   ├── external/
@@ -269,7 +305,15 @@ customer-intelligence-platform/
 │   │   ├── test_customer_rfm.py
 │   │   └── test_order_metrics.py
 │   │
+│   ├── ml/
+│   │   ├── test_customer_features.py
+│   │   ├── test_customer_churn_dataset.py
+│   │   ├── test_churn_dataset.py
+│   │   ├── test_churn_model.py
+│   │   └── test_churn_pipeline.py
+│   │
 │   ├── api/
+
 │   │   ├── test_analytics.py
 │   │   ├── test_cohorts.py
 │   │   └── test_health.py
@@ -386,7 +430,7 @@ The Raw Layer preserves the source data structure and provides the foundation fo
 
 # 📊 Analytics Layer
 
-The `analytics` schema contains transformed and business-oriented models.
+The `analytics` schema contains transformed, business-oriented, and machine learning-ready models.
 
 Current analytical models include:
 
@@ -395,6 +439,8 @@ analytics.order_metrics
 analytics.customer_metrics
 analytics.customer_rfm
 analytics.customer_cohorts
+analytics.customer_features
+analytics.customer_churn_dataset
 ```
 
 ---
@@ -495,6 +541,35 @@ Example:
 Cohort Month   Month 0   Month 1   Month 2   Month 3
 2024-01        100%      100%       0%       100%
 2024-03        100%        0%     100%        0%
+```
+
+---
+
+# 🤖 Machine Learning
+
+The platform is evolving its analytical foundation into a Machine Learning pipeline focused initially on **customer churn prediction**.
+
+The ML architecture builds predictive features from historical customer behavior while explicitly separating historical observations from future outcomes to prevent data leakage.
+
+The current pipeline is:
+
+```text
+Historical Raw Data
+        ↓
+Customer Features
+        ↓
+Churn Dataset
+        ↓
+Train / Test Split
+        ↓
+Feature Scaling
+        ↓
+Logistic Regression
+        ↓
+Model Evaluation
+        ↓
+Serialized Model
+```
 
 ---
 
@@ -889,7 +964,8 @@ Current testing areas include:
   - Customer metric validation
   - RFM score and segment validation
 
-Analytical tests use temporary DuckDB databases, allowing transformations to be tested in isolation without depending on the production warehouse.
+Analytical and ML pipeline tests use temporary DuckDB databases, allowing transformations and feature engineering pipelines to be tested in isolation without depending on the production warehouse.
+
 
 API tests use FastAPI's `TestClient` to validate the application through the HTTP layer.
 
@@ -1174,14 +1250,17 @@ ANALYTICS_API_URL=http://localhost:8000
 
 ## Phase 7 — Machine Learning 🚧
 
-* [ ] Feature engineering
-* [ ] Churn definition and labeling
-* [ ] Training dataset generation
-* [ ] Churn prediction model
-* [ ] Model evaluation pipeline
-* [ ] Prediction persistence
+* [x] Feature engineering
+* [x] Churn definition and labeling
+* [x] Training dataset generation
+* [x] Churn prediction model
+* [x] Model evaluation pipeline
+* [x] Model persistence
+* [x] Automated ML pipeline tests
 * [ ] Churn prediction API
 * [ ] Dashboard integration
+* [ ] Prediction persistence
+* [ ] Model monitoring
 * [ ] Recommendation models
 
 ---
@@ -1223,13 +1302,19 @@ The current MVP establishes the core analytical platform. Future iterations may 
 
 ### Machine Learning
 
-* [ ] Feature engineering pipeline
-* [ ] Churn prediction
+* [x] Feature engineering pipeline
+* [x] Churn prediction model
+* [x] Churn training dataset
+* [x] Model evaluation
+* [x] Model persistence
+* [ ] Churn prediction API
+* [ ] Dashboard integration
 * [ ] Customer lifetime value prediction
 * [ ] Recommendation systems
 * [ ] Experiment tracking
 * [ ] Model registry
 * [ ] Model monitoring
+
 
 These features are intentionally outside the current MVP scope and will be introduced incrementally after the analytical foundation has been consolidated.
 
@@ -1252,15 +1337,24 @@ Raw Data
 DuckDB
       │
       ▼
+      ▼
 Analytics Models
       │
       ├── Order Metrics
       ├── Customer Metrics
-      └── RFM
+      ├── RFM
       └── Customer Cohorts
       │
       ▼
+Machine Learning
+      │
+      ├── Customer Features
+      ├── Churn Dataset
+      └── Churn Model
+      │
+      ▼
 Analytics API
+
       │
       ├── KPIs
       ├── Revenue
@@ -1303,14 +1397,19 @@ The platform currently demonstrates:
 * Application logging
 * Production-oriented architecture
 * Containerization
+* Machine Learning feature engineering
+* Churn prediction
+* ML model evaluation
+* ML pipeline testing
+* Model persistence
 
 The current MVP has established an automated quality gate through GitHub Actions, validating formatting, linting, type checking, automated tests, and data quality.
 
 The project now includes a CI/CD validation pipeline through GitHub Actions, automatically validating formatting, linting, type checking, automated tests, and Docker image builds on pushes and pull requests.
 
-With the analytical foundation, customer segmentation, cohort analysis, Data Quality framework, automated testing, containerization, CI/CD pipeline, and production-oriented architecture established, the next evolution of the project is the Machine Learning layer.
+With the analytical foundation, customer segmentation, cohort analysis, Data Quality framework, automated testing, containerization, CI/CD pipeline, production-oriented architecture, and initial Machine Learning layer established, the next evolution of the project is to operationalize the churn prediction capability.
 
-The Machine Learning phase will build predictive capabilities on top of the existing customer analytics foundation, starting with feature engineering and churn prediction.
+The next steps will focus on exposing predictions through the API, integrating churn insights into the dashboard, persisting predictions, and establishing the foundations for model monitoring.
 
 ---
 
