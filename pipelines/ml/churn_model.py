@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import joblib
 import pandas as pd
@@ -31,10 +32,15 @@ class ChurnModel:
         X = data[self.FEATURES]
         y = data["churn"]
 
+        test_size = max(
+            0.2,
+            y.nunique() / len(y),
+        )
+
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
-            test_size=0.2,
+            test_size=test_size,
             random_state=42,
             stratify=y,
         )
@@ -87,3 +93,24 @@ class ChurnModel:
         joblib.dump(model, self.model_path)
 
         return metrics
+
+    def load(self) -> Any:
+        if not self.model_path.exists():
+            raise FileNotFoundError(f"Model file not found: {self.model_path}")
+
+        return joblib.load(self.model_path)
+
+    def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+        model = self.load()
+
+        X = data[self.FEATURES]
+
+        predictions = model.predict(X)
+        probabilities = model.predict_proba(X)[:, 1]
+
+        result = data[["customer_unique_id"]].copy()
+
+        result["churn_probability"] = probabilities
+        result["churn_prediction"] = predictions
+
+        return result

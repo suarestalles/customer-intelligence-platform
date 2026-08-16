@@ -2,7 +2,7 @@
 
 An end-to-end **Customer Intelligence Platform** built with **Python, FastAPI, DuckDB, SQL, Streamlit, and Data Analytics**, combining Software Engineering, Data Engineering, Analytics Engineering, and Business Intelligence practices.
 
-> **Status:** 🚀 MVP — Analytics Platform with Data Quality, automated testing, CI/CD, Docker, production-oriented configuration, health checks, observability foundations, and Machine Learning foundations
+> **Status:** 🚀 MVP — Analytics Platform with Data Quality, automated testing, CI/CD, Docker, production-oriented configuration, health checks, observability foundations, and a tested Machine Learning churn prediction pipeline
 
 
 ---
@@ -44,8 +44,11 @@ The platform currently provides analytical and machine learning capabilities for
 * Churn labeling
 * Churn training dataset generation
 * Churn model training
+* Churn model persistence
+* Churn prediction
 * Model evaluation
 * Automated testing of analytical models and ML pipelines
+* ML model loading and inference validation
 
 
 The project is being developed incrementally, with the goal of demonstrating how Data Engineering, Analytics, Backend Development, Testing, and Software Engineering can be combined into a single solution.
@@ -568,7 +571,9 @@ Logistic Regression
         ↓
 Model Evaluation
         ↓
-Serialized Model
+Model Persistence
+        ↓
+Churn Prediction
 ```
 
 ---
@@ -963,9 +968,29 @@ Current testing areas include:
   - Revenue reconciliation
   - Customer metric validation
   - RFM score and segment validation
+* Machine Learning
+  - Feature engineering validation
+  - Churn dataset generation
+  - Churn labeling validation
+  - Model training
+  - Model persistence
+  - Model loading
+  - Prediction output validation
+  - Churn probability validation
+  - Churn class validation
+  - ML pipeline integration
 
 Analytical and ML pipeline tests use temporary DuckDB databases, allowing transformations and feature engineering pipelines to be tested in isolation without depending on the production warehouse.
 
+ML model tests also validate model training, persistence, loading, inference, prediction structure, churn probabilities, and binary churn classifications.
+
+Run the ML test suite:
+
+```bash
+uv run pytest tests/ml
+
+uv run pytest
+```
 
 API tests use FastAPI's `TestClient` to validate the application through the HTTP layer.
 
@@ -1001,13 +1026,6 @@ Analytics Layer
    ├── Lifetime calculations
    ├── RFM scores
    └── Customer segmentation
-
-Run the complete test suite:
-
-```bash
-uv run pytest
-```
-
 ---
 
 # 🎨 Formatting
@@ -1254,12 +1272,18 @@ ANALYTICS_API_URL=http://localhost:8000
 * [x] Churn definition and labeling
 * [x] Training dataset generation
 * [x] Churn prediction model
-* [x] Model evaluation pipeline
+* [x] Train/test split
+* [x] Feature scaling
+* [x] Logistic Regression model
+* [x] Model evaluation
 * [x] Model persistence
+* [x] Model loading
+* [x] Churn prediction
+* [x] Prediction validation
 * [x] Automated ML pipeline tests
 * [ ] Churn prediction API
-* [ ] Dashboard integration
 * [ ] Prediction persistence
+* [ ] Dashboard integration
 * [ ] Model monitoring
 * [ ] Recommendation models
 
@@ -1303,17 +1327,27 @@ The current MVP establishes the core analytical platform. Future iterations may 
 ### Machine Learning
 
 * [x] Feature engineering pipeline
-* [x] Churn prediction model
+* [x] Churn definition and labeling
 * [x] Churn training dataset
+* [x] Train/test split
+* [x] Feature scaling
+* [x] Churn prediction model
+* [x] Logistic Regression
 * [x] Model evaluation
 * [x] Model persistence
+* [x] Model loading
+* [x] Churn inference
+* [x] Prediction validation
+* [x] Automated ML model tests
 * [ ] Churn prediction API
+* [ ] Prediction persistence
 * [ ] Dashboard integration
 * [ ] Customer lifetime value prediction
 * [ ] Recommendation systems
 * [ ] Experiment tracking
 * [ ] Model registry
 * [ ] Model monitoring
+
 
 
 These features are intentionally outside the current MVP scope and will be introduced incrementally after the analytical foundation has been consolidated.
@@ -1398,18 +1432,25 @@ The platform currently demonstrates:
 * Production-oriented architecture
 * Containerization
 * Machine Learning feature engineering
-* Churn prediction
+* Churn labeling
+* Churn training dataset generation
+* Train/test model validation
+* Feature scaling
+* Logistic Regression churn prediction
 * ML model evaluation
-* ML pipeline testing
 * Model persistence
+* Model loading
+* Customer churn inference
+* Prediction validation
+* ML pipeline testing
 
 The current MVP has established an automated quality gate through GitHub Actions, validating formatting, linting, type checking, automated tests, and data quality.
 
 The project now includes a CI/CD validation pipeline through GitHub Actions, automatically validating formatting, linting, type checking, automated tests, and Docker image builds on pushes and pull requests.
 
-With the analytical foundation, customer segmentation, cohort analysis, Data Quality framework, automated testing, containerization, CI/CD pipeline, production-oriented architecture, and initial Machine Learning layer established, the next evolution of the project is to operationalize the churn prediction capability.
+With the analytical foundation, customer segmentation, cohort analysis, Data Quality framework, automated testing, containerization, CI/CD pipeline, production-oriented architecture, and a tested Machine Learning churn prediction pipeline established, the next evolution of the project is to operationalize the model.
 
-The next steps will focus on exposing predictions through the API, integrating churn insights into the dashboard, persisting predictions, and establishing the foundations for model monitoring.
+The next steps will focus on exposing churn predictions through the API, integrating churn insights into the dashboard, persisting predictions, and establishing the foundations for model monitoring.
 
 ---
 
